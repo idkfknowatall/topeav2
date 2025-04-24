@@ -1,8 +1,8 @@
 const nodemailer = require('nodemailer');
 
-// Create email transporter
+// Create email transporter with the updated settings
 const transporter = nodemailer.createTransport({
-  host: 'mail.topea.me',
+  host: 'de3000.dnsiaas.com', // Using the HELO domain from your settings
   port: 465,
   secure: true, // true for 465, false for other ports
   auth: {
