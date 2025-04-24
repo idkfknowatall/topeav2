@@ -25,6 +25,8 @@ A modern, responsive portfolio website built with React, TypeScript, and Tailwin
 
 ```
 topea.me/
+├── api/                  # Serverless API functions for Vercel
+│   └── contact/          # Contact form API endpoint
 ├── public/               # Static assets
 │   ├── images/           # Image files
 │   ├── favicon.ico       # Favicon
@@ -42,7 +44,7 @@ topea.me/
 │   ├── main.tsx          # Entry point
 │   ├── types.ts          # TypeScript type definitions
 │   └── index.css         # Global styles
-├── server/               # Server-side code
+├── server/               # Server-side code (for traditional deployment)
 │   ├── server.ts         # Express server for handling form submissions
 │   ├── package.json      # Server dependencies
 │   └── tsconfig.json     # TypeScript configuration for server
@@ -50,9 +52,11 @@ topea.me/
 ├── tailwind.config.js    # Tailwind CSS configuration
 ├── tsconfig.json         # TypeScript configuration
 ├── vite.config.ts        # Vite configuration
+├── vercel.json           # Vercel configuration
 ├── .env                  # Environment variables (not in git)
 ├── .env.development      # Development environment variables
 ├── .env.production       # Production environment variables
+├── DEPLOYMENT_GUIDE.md   # Comprehensive deployment guide
 └── package.json          # Project dependencies and scripts
 ```
 
@@ -313,66 +317,39 @@ The website is compatible with:
 
 ## 📦 Deployment
 
-### Building for Production
+This project can be deployed in two ways:
 
-```bash
-# Build the frontend
-npm run build
+1. **Vercel Deployment (Recommended)**: Using Vercel's serverless functions for the API
+2. **Traditional Server Deployment**: Using Express server with PM2
 
-# Build the server
-npm run server:build
-```
+For detailed deployment instructions, please refer to the [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) file.
 
-This creates a production-ready build in the `dist` directory for the frontend and in `server/dist` for the server.
+### Quick Deployment Overview
 
-### Deploying to a Web Server
+#### Vercel Deployment
 
-1. Upload the contents of the `dist` directory to your web server
-2. Upload the contents of the `server` directory to your server
-3. Install server dependencies:
-   ```bash
-   cd server
-   npm install --production
-   ```
-4. Set up environment variables on your server:
-   ```
-   EMAIL_PASSWORD=your_email_password
-   PORT=3001
-   NODE_ENV=production
-   ```
-5. Start the server:
-   ```bash
-   npm start
-   ```
-
-### Deploying to a VPS or Dedicated Server
-
-1. Clone the repository on your server
-2. Build both frontend and server:
-   ```bash
-   npm install
-   npm run build
-   cd server
-   npm install
-   npm run build
-   ```
-3. Set up environment variables
-4. Use PM2 or similar to keep the server running:
-   ```bash
-   npm install -g pm2
-   pm2 start server/dist/server.js
-   ```
-
-### Deploying to Netlify/Vercel with Serverless Functions
-
-For platforms like Netlify or Vercel, you'll need to adapt the server code to use serverless functions:
-
-1. Create a serverless function for the contact form API
-2. Update the API URL in the frontend code
+1. Push your code to GitHub
+2. Connect your GitHub repository to Vercel
 3. Configure the build settings:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-4. Set up environment variables in the platform's dashboard
+   - Framework Preset: Vite
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+4. Set up environment variables:
+   - `EMAIL_PASSWORD`: Your email password for the contact form
+5. Deploy
+
+#### Traditional Server Deployment
+
+1. Build the application:
+   ```bash
+   npm run build
+   npm run server:build
+   ```
+2. Set up environment variables
+3. Use PM2 to manage the server process:
+   ```bash
+   npm run deploy:start
+   ```
 
 ## 📄 License
 
