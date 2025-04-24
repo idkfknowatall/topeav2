@@ -5,18 +5,31 @@ const Hero: React.FC = () => {
   const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Delay adding the parallax effect until after initial render
+    let timeoutId: number;
+
     const handleParallax = () => {
       if (heroRef.current) {
         const scrollPosition = window.scrollY;
         const parallaxBg = heroRef.current.querySelector('.parallax-bg') as HTMLElement;
         if (parallaxBg) {
-          parallaxBg.style.transform = `translateY(${scrollPosition * 0.4}px)`;
+          // Use requestAnimationFrame for smoother performance
+          requestAnimationFrame(() => {
+            parallaxBg.style.transform = `translateY(${scrollPosition * 0.4}px)`;
+          });
         }
       }
     };
 
-    window.addEventListener('scroll', handleParallax);
-    return () => window.removeEventListener('scroll', handleParallax);
+    // Delay adding scroll listener to not interfere with initial render
+    timeoutId = window.setTimeout(() => {
+      window.addEventListener('scroll', handleParallax, { passive: true });
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('scroll', handleParallax);
+      window.clearTimeout(timeoutId);
+    };
   }, []);
 
   const scrollToPortfolio = () => {
@@ -41,19 +54,25 @@ const Hero: React.FC = () => {
           src="/images/hero-bg.jpg"
           alt="Hero background"
           className="absolute inset-0 z-0 w-full h-full object-cover opacity-15 parallax-bg"
-          loading="eager" // Load immediately as it's above the fold
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
         />
       </picture>
 
       <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-primary-900/50 to-primary-900/80"></div>
 
       <div className="container mx-auto px-4 md:px-6 z-10 text-center md:text-left">
-        <div className="max-w-3xl mx-auto md:mx-0 animate-slide-up">
+        <div className="max-w-3xl mx-auto md:mx-0">
           <h2 className="text-secondary-400 font-medium text-lg md:text-xl mb-3 tracking-wide">Web Developer & Designer</h2>
           <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
             Transforming <span className="text-secondary-400">Ideas</span><br />Into Digital Reality
           </h1>
-          <p className="text-slate-200 text-lg md:text-xl max-w-xl mb-10 leading-relaxed">
+          <p
+            className="text-slate-200 text-lg md:text-xl max-w-xl mb-10 leading-relaxed"
+            data-lcp="true"
+            id="hero-description"
+          >
             We create exceptional digital experiences that elevate brands and drive business growth through innovative design and development.
           </p>
 
