@@ -36,11 +36,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service }) => {
             </li>
           ))}
         </ul>
-        <div className="mt-6 text-center">
-          <button className="px-5 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 border border-primary-200 hover:border-primary-300 rounded-lg transition-colors hover:bg-primary-50">
-            Learn More
-          </button>
-        </div>
+
       </div>
     </div>
   );
