@@ -32,12 +32,12 @@ const Portfolio: React.FC = () => {
     },
     {
       id: 2,
-      title: 'Mobile Banking App',
-      category: 'app',
+      title: 'Mobile Banking Website',
+      category: 'web',
       image: '/images/portfolio-2.jpg',
       webp: '/images/portfolio-2.webp',
       srcSet: '/images/portfolio-2-1024.webp 1024w, /images/portfolio-2-640.webp 640w, /images/portfolio-2-320.webp 320w',
-      description: 'A secure and user-friendly banking application with stunning UI and advanced features.'
+      description: 'A secure and user-friendly mobile-friendly banking website with stunning UI and advanced features.'
     },
     {
       id: 3,
@@ -50,12 +50,12 @@ const Portfolio: React.FC = () => {
     },
     {
       id: 4,
-      title: 'Fitness Tracker',
-      category: 'app',
+      title: 'Fitness Tracker Website',
+      category: 'web',
       image: '/images/portfolio-4.jpg',
       webp: '/images/portfolio-4.webp',
       srcSet: '/images/portfolio-4-1024.webp 1024w, /images/portfolio-4-640.webp 640w, /images/portfolio-4-320.webp 320w',
-      description: 'A health and fitness tracking application with workout plans and progress visualization.'
+      description: 'A responsive health and fitness tracking website with workout plans and progress visualization.'
     },
     {
       id: 5,
