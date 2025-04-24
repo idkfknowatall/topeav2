@@ -20,31 +20,50 @@ const requestCounts = new Map();
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour in milliseconds
 const MAX_REQUESTS_PER_IP = 5;
 
+// Define the origins allowed to access this function
+const ALLOWED_ORIGINS = [
+  'https://topea.me',
+  'https://www.topea.me',
+  // Add development origins if needed:
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:4173'
+];
+
 module.exports = async (req, res) => {
-  // Set CORS headers
+  // Get the origin of the request
+  const requestOrigin = req.headers.origin;
+
+  // Set the Access-Control-Allow-Origin header ONLY if the request origin is in our allowed list
+  if (requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin)) {
+    res.setHeader('Access-Control-Allow-Origin', requestOrigin);
+  }
+
+  // Set other necessary CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS'); // Only allow POST and OPTIONS
   res.setHeader(
     'Access-Control-Allow-Headers',
     'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
   );
 
-  // Handle preflight request
+  // Handle CORS preflight requests (OPTIONS method)
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
 
-  // Only allow POST requests
+  // Only allow POST requests for the main logic
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    // Set status 405 Method Not Allowed if it's not POST or OPTIONS
+    res.setHeader('Allow', 'POST, OPTIONS');
+    return res.status(405).json({ error: `Method ${req.method} Not Allowed` });
   }
 
   try {
     // Basic rate limiting
     const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress || 'unknown';
-    
+
     if (!requestCounts.has(ip)) {
       requestCounts.set(ip, {
         count: 1,
@@ -52,12 +71,12 @@ module.exports = async (req, res) => {
       });
     } else {
       const record = requestCounts.get(ip);
-      
+
       // Reset count if the window has passed
       if (Date.now() > record.resetTime) {
         record.count = 1;
         record.resetTime = Date.now() + RATE_LIMIT_WINDOW;
-      } 
+      }
       // Check if rate limit exceeded
       else if (record.count >= MAX_REQUESTS_PER_IP) {
         return res.status(429).json({
