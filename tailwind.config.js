@@ -74,6 +74,7 @@ export default {
         'slide-up': 'slideUp 0.5s ease-out',
         'slide-down': 'slideDown 0.5s ease-out',
         'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+        'pulse-slow': 'pulseGlow 4s ease-in-out infinite',
         'spin-slow': 'spin 6s linear infinite',
       },
       keyframes: {
