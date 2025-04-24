@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
+import { FaEnvelope, FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
 
 // API URL - use environment variable or default to localhost in development
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
@@ -133,38 +133,41 @@ const Contact: React.FC = () => {
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className={`lg:col-span-1 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-              <div className="bg-primary-800/50 backdrop-blur-sm rounded-xl p-8 md:p-10 h-full shadow-elevated">
-                <h3 className="font-serif text-2xl font-bold mb-8">Contact Information</h3>
+              <div className="bg-gradient-to-br from-primary-800/80 to-primary-900/90 backdrop-blur-sm rounded-xl p-8 md:p-10 h-full shadow-elevated border border-primary-700/30 relative overflow-hidden">
+                {/* Decorative elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-secondary-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary-600/20 rounded-full blur-3xl -ml-20 -mb-20"></div>
 
-                <div className="space-y-8">
-                  <div className="flex items-start">
-                    <div className="mr-4 bg-secondary-500 rounded-full p-3 text-primary-900">
-                      <FaEnvelope size={20} />
+                <h3 className="font-serif text-2xl font-bold mb-10 relative">
+                  Contact Information
+                  <span className="block w-16 h-1 bg-secondary-500 mt-3"></span>
+                </h3>
+
+                <div className="space-y-12 relative z-10">
+                  <div className="flex items-start transform transition-transform duration-300 hover:translate-x-2">
+                    <div className="mr-5 bg-secondary-500 rounded-full p-4 text-primary-900 shadow-lg">
+                      <FaEnvelope size={22} />
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-slate-300 mb-1">Email</h4>
-                      <a href="mailto:contact@topea.me" className="text-white hover:text-secondary-400 transition-colors">contact@topea.me</a>
+                      <h4 className="text-sm font-medium text-secondary-300 mb-2">Email</h4>
+                      <a href="mailto:contact@topea.me" className="text-white hover:text-secondary-400 transition-colors text-lg">contact@topea.me</a>
                     </div>
                   </div>
 
-                  <div className="flex items-start">
-                    <div className="mr-4 bg-secondary-500 rounded-full p-3 text-primary-900">
-                      <FaPhone size={20} />
+                  <div className="flex items-start transform transition-transform duration-300 hover:translate-x-2">
+                    <div className="mr-5 bg-secondary-500 rounded-full p-4 text-primary-900 shadow-lg">
+                      <FaMapMarkerAlt size={22} />
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-slate-300 mb-1">Phone</h4>
-                      <a href="tel:+442045876543" className="text-white hover:text-secondary-400 transition-colors">+44 (204) 587-6543</a>
+                      <h4 className="text-sm font-medium text-secondary-300 mb-2">Location</h4>
+                      <p className="text-white text-lg">London, United Kingdom</p>
                     </div>
                   </div>
 
-                  <div className="flex items-start">
-                    <div className="mr-4 bg-secondary-500 rounded-full p-3 text-primary-900">
-                      <FaMapMarkerAlt size={20} />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-medium text-slate-300 mb-1">Location</h4>
-                      <p className="text-white">London, United Kingdom</p>
-                    </div>
+                  <div className="mt-12 pt-8 border-t border-primary-700/30">
+                    <p className="text-slate-300 text-sm">
+                      We're available Monday through Friday, 9:00 AM to 6:00 PM GMT. We typically respond to all inquiries within 24 hours.
+                    </p>
                   </div>
                 </div>
               </div>
