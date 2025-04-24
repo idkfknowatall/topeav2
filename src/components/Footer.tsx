@@ -1,7 +1,7 @@
 import React from 'react';
-import { FaEnvelope, FaArrowUp, FaTwitter, FaLinkedin, FaGithub } from 'react-icons/fa';
+import { FaEnvelope, FaArrowUp } from 'react-icons/fa';
 
-const FooterWithReactIcons: React.FC = () => {
+const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   const scrollToTop = () => {
@@ -13,11 +13,7 @@ const FooterWithReactIcons: React.FC = () => {
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           <div className="md:col-span-1">
-            <div className="flex items-center mb-4">
-              <div className="w-8 h-8 rounded-md mr-2 bg-secondary-500"></div>
-              <h3 className="font-serif font-bold text-xl">Topea</h3>
-            </div>
-            <p className="text-slate-300 text-sm mt-1 mb-4">Web Developer & Designer based in London, working worldwide.</p>
+            <p className="text-slate-300 text-sm mb-4">Web Developer & Designer based in London, working worldwide.</p>
             <a
               href="mailto:contact@topea.me"
               className="inline-flex items-center text-secondary-400 hover:text-secondary-300 transition-colors text-sm"
@@ -127,4 +123,4 @@ const FooterWithReactIcons: React.FC = () => {
   );
 };
 
-export default FooterWithReactIcons;
+export default Footer;
