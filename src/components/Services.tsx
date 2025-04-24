@@ -24,57 +24,57 @@ const Services: React.FC = () => {
     {
       id: 1,
       title: 'UI/UX Design',
-      description: 'Crafting intuitive user experiences with beautiful interfaces that engage and delight your audience.',
+      description: 'Creating visually stunning and intuitive frontend interfaces that enhance user experience and drive engagement.',
       icon: FaPalette,
       price: 'Custom pricing',
       features: [
-        'User Research & Personas',
-        'Wireframing & Prototyping',
-        'Interface Design',
-        'Usability Testing',
-        'Design Systems'
+        'Responsive Interface Design',
+        'Interactive Prototyping',
+        'Mobile-First Design',
+        'User Flow Optimization',
+        'Design System Creation'
       ]
     },
     {
       id: 2,
-      title: 'Web Development',
-      description: 'Building fast, responsive, and scalable websites with modern technologies and best practices.',
+      title: 'Frontend Development',
+      description: 'Building beautiful, responsive, and fast-loading websites with modern frontend technologies and frameworks.',
       icon: FaCode,
       price: 'Custom pricing',
       features: [
-        'Custom Website Development',
-        'E-commerce Solutions',
-        'CMS Integration',
-        'Web Applications',
-        'API Development'
+        'Responsive Website Development',
+        'Frontend Performance Optimization',
+        'Interactive UI Components',
+        'Cross-Browser Compatibility',
+        'Mobile-Friendly Implementation'
       ]
     },
     {
       id: 3,
-      title: 'Branding & Identity',
-      description: 'Creating distinctive brand identities that capture your essence and connect with your target audience.',
+      title: 'Web Design Systems',
+      description: 'Developing cohesive design systems that ensure consistency across your digital presence and strengthen brand identity.',
       icon: FaLayerGroup,
       price: 'Custom pricing',
       features: [
-        'Logo Design',
-        'Brand Guidelines',
-        'Visual Identity',
-        'Marketing Materials',
-        'Brand Strategy'
+        'Component Libraries',
+        'Design Tokens & Guidelines',
+        'Responsive Grid Systems',
+        'Typography Hierarchies',
+        'Color & Style Systems'
       ]
     },
     {
       id: 4,
-      title: 'Digital Marketing',
-      description: 'Optimizing your digital presence to increase visibility, attract more visitors, and convert leads.',
+      title: 'SEO & Performance',
+      description: 'Optimizing your website for search engines and performance to increase visibility, traffic, and user satisfaction.',
       icon: FaGlobe,
       price: 'Custom pricing',
       features: [
-        'SEO Optimization',
-        'Content Strategy',
-        'Analytics & Reporting',
-        'Marketing Automation',
-        'Social Media Management'
+        'Technical SEO Implementation',
+        'Performance Optimization',
+        'Semantic HTML Structure',
+        'Core Web Vitals Improvement',
+        'Accessibility Enhancements'
       ]
     }
   ];
@@ -87,8 +87,8 @@ const Services: React.FC = () => {
           <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6">Our Services</h2>
           <div className="w-24 h-1 bg-primary-600 mx-auto"></div>
           <p className="mt-6 text-slate-600 max-w-2xl mx-auto text-lg">
-            We provide comprehensive design and development solutions tailored to your business needs,
-            helping you stand out in today's competitive digital landscape.
+            We specialize in creating beautiful, high-performance frontend websites with exceptional user experiences
+            and strong SEO foundations to help your business stand out online.
           </p>
         </div>
 
@@ -111,9 +111,9 @@ const Services: React.FC = () => {
                 <FaBolt size={32} />
               </div>
             </div>
-            <h3 className="text-white font-serif text-2xl md:text-3xl font-bold mb-4">Need a Custom Solution?</h3>
+            <h3 className="text-white font-serif text-2xl md:text-3xl font-bold mb-4">Need a Custom Website Design?</h3>
             <p className="text-white/80 mb-8 max-w-2xl mx-auto text-lg">
-              Our team can create a tailored solution designed specifically for your unique business requirements and challenges.
+              Our team can create a tailored frontend design solution that perfectly matches your brand and business goals while ensuring optimal performance and SEO.
             </p>
             <button
               onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
