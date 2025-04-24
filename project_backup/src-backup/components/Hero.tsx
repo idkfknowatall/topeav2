@@ -1,0 +1,87 @@
+import React, { useEffect, useRef } from 'react';
+import { FaChevronDown } from 'react-icons/fa';
+
+const HeroWithReactIcons: React.FC = () => {
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleParallax = () => {
+      if (heroRef.current) {
+        const scrollPosition = window.scrollY;
+        const parallaxBg = heroRef.current.querySelector('.parallax-bg') as HTMLElement;
+        if (parallaxBg) {
+          parallaxBg.style.transform = `translateY(${scrollPosition * 0.4}px)`;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleParallax);
+    return () => window.removeEventListener('scroll', handleParallax);
+  }, []);
+
+  const scrollToPortfolio = () => {
+    const portfolioSection = document.getElementById('portfolio');
+    if (portfolioSection) {
+      portfolioSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  return (
+    <section 
+      id="home" 
+      ref={heroRef}
+      className="relative h-screen flex items-center justify-center bg-gradient-to-r from-primary-900 to-primary-800 text-white overflow-hidden"
+    >
+      <div 
+        className="absolute inset-0 z-0 parallax-bg"
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.15
+        }}
+      />
+      
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-primary-900/50 to-primary-900/80"></div>
+      
+      <div className="container mx-auto px-4 md:px-6 z-10 text-center md:text-left">
+        <div className="max-w-3xl mx-auto md:mx-0 animate-slide-up">
+          <h2 className="text-secondary-400 font-medium text-lg md:text-xl mb-3 tracking-wide">Web Developer & Designer</h2>
+          <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
+            Transforming <span className="text-secondary-400">Ideas</span><br />Into Digital Reality
+          </h1>
+          <p className="text-slate-200 text-lg md:text-xl max-w-xl mb-10 leading-relaxed">
+            We create exceptional digital experiences that elevate brands and drive business growth through innovative design and development.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-5 justify-center md:justify-start">
+            <button 
+              onClick={scrollToPortfolio}
+              className="px-8 py-4 bg-secondary-500 hover:bg-secondary-600 text-slate-900 font-medium rounded-lg transition-all transform hover:scale-105 hover:shadow-elevated focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-opacity-50"
+            >
+              View Our Work
+            </button>
+            <button
+              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              className="px-8 py-4 border-2 border-white hover:border-secondary-400 hover:text-secondary-400 font-medium rounded-lg transition-all hover:shadow-soft"
+            >
+              Let's Talk
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <button 
+          onClick={scrollToPortfolio}
+          className="flex items-center justify-center w-12 h-12 rounded-full border border-white/30 text-white/70 hover:text-white hover:border-secondary-400 hover:text-secondary-400 transition-all"
+          aria-label="Scroll down"
+        >
+          <FaChevronDown size={20} />
+        </button>
+      </div>
+    </section>
+  );
+};
+
+export default HeroWithReactIcons;
