@@ -4,6 +4,8 @@ import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import compression from 'compression';
+import helmet from 'helmet';
 
 // Load environment variables
 dotenv.config();
@@ -15,14 +17,46 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(compression()); // Compress responses
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https:"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      connectSrc: ["'self'", "https://topea.me", "https://www.topea.me"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  xssFilter: true,
+  noSniff: true,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+}));
+
+// HTTPS redirection in production
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+      res.redirect(`https://${req.header('host')}${req.url}`);
+    } else {
+      next();
+    }
+  });
+}
+
+app.use(express.json({ limit: '100kb' })); // Limit request size
+app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? ['https://topea.me', 'http://91.108.80.187:3000', 'http://91.108.80.187']
+    ? ['https://topea.me', 'https://www.topea.me']
     : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:4173'],
   methods: ['POST', 'OPTIONS'],
-  credentials: true
+  credentials: true,
+  maxAge: 86400 // 24 hours
 }));
 
 // Rate limiting
@@ -72,7 +106,7 @@ const transporter = nodemailer.createTransport({
   secure: true, // true for 465, false for other ports
   auth: {
     user: 'contact@topea.me',
-    pass: process.env.EMAIL_PASSWORD || 'ed,2$?1Ra(Yq'
+    pass: process.env.EMAIL_PASSWORD
   },
   tls: {
     // Do not fail on invalid certs
@@ -176,8 +210,31 @@ The Topea Team
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../dist')));
+  // Set cache control for static assets
+  app.use(express.static(path.join(__dirname, '../dist'), {
+    etag: true,
+    lastModified: true,
+    setHeaders: (res, path) => {
+      // Set long cache for assets with hash in filename
+      if (path.match(/\.(js|css|png|jpg|jpeg|gif|webp|svg|ico|woff2|woff|ttf|eot)$/)) {
+        const maxAge = path.includes('.') && path.split('.').length > 2
+          ? 31536000 // 1 year for hashed assets
+          : 86400; // 1 day for non-hashed assets
 
+        res.setHeader('Cache-Control', `public, max-age=${maxAge}, immutable`);
+      } else {
+        // HTML files and other assets
+        res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+      }
+    }
+  }));
+
+  // Health check endpoint
+  app.get('/health', (_req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
+  // Handle all other routes
   app.get('*', (_req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
   });

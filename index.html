@@ -205,6 +205,28 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- Structured data for SEO -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "name": "Topea",
+        "description": "Professional web development and design services. We create exceptional digital experiences that elevate brands and drive business growth.",
+        "url": "https://topea.me",
+        "logo": "https://topea.me/favicon.ico",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "London",
+          "addressCountry": "UK"
+        },
+        "email": "contact@topea.me",
+        "priceRange": "$$",
+        "openingHours": "Mo-Fr 09:00-18:00",
+        "serviceType": ["Web Design", "Frontend Development", "UI/UX Design", "SEO Optimization"],
+        "sameAs": ["https://github.com/idkfknowatall"]
+      }
+    </script>
+
     <!-- Defer non-critical JavaScript -->
     <script type="module" src="/src/main.tsx" defer></script>
 
