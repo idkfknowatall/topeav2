@@ -1,8 +1,17 @@
-import React from 'react';
-import { FaEnvelope, FaArrowUp } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import { FaEnvelope, FaArrowUp, FaInstagram } from 'react-icons/fa';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const [isHovered, setIsHovered] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  // Animation effect when component mounts
+  useEffect(() => {
+    setIsAnimating(true);
+    const timer = setTimeout(() => setIsAnimating(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -88,18 +97,54 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="md:col-span-1">
-            <h4 className="font-medium text-lg mb-4">Newsletter</h4>
-            <p className="text-slate-300 text-sm mb-4">Subscribe to our newsletter for the latest updates and insights.</p>
-            <div className="flex">
-              <input
-                type="email"
-                placeholder="Your email"
-                className="px-4 py-2 bg-primary-800 border border-primary-700 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-secondary-400 text-white text-sm w-full"
-              />
-              <button className="bg-secondary-500 hover:bg-secondary-600 text-primary-900 px-4 py-2 rounded-r-lg transition-colors">
-                Subscribe
-              </button>
-            </div>
+            <h4 className="font-medium text-lg mb-4">Follow Us</h4>
+            <p className="text-slate-300 text-sm mb-6">Check out our Instagram for design inspiration and behind-the-scenes content.</p>
+
+            <a
+              href="https://www.instagram.com/topea1/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+            >
+              <div className={`
+                relative overflow-hidden rounded-xl
+                bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400
+                p-6 shadow-lg transform transition-all duration-500
+                ${isHovered ? 'scale-105 shadow-xl' : ''}
+                ${isAnimating ? 'animate-pulse' : ''}
+              `}>
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-white opacity-10 rounded-full"></div>
+                <div className="absolute -bottom-12 -left-12 w-40 h-40 bg-white opacity-10 rounded-full"></div>
+
+                <div className="relative z-10 flex items-center">
+                  <div className={`
+                    mr-4 bg-white bg-opacity-20 rounded-full p-4
+                    transform transition-all duration-500
+                    ${isHovered ? 'rotate-12 scale-110' : ''}
+                  `}>
+                    <FaInstagram size={28} className="text-white" />
+                  </div>
+                  <div>
+                    <h5 className="text-white font-bold text-lg mb-1">@topea1</h5>
+                    <p className="text-white text-opacity-80 text-sm">Follow our creative journey</p>
+                  </div>
+                </div>
+
+                <div className={`
+                  mt-4 bg-white bg-opacity-10 rounded-lg px-4 py-2
+                  transform transition-all duration-500 origin-left
+                  ${isHovered ? 'scale-x-105' : ''}
+                `}>
+                  <span className="text-white text-sm font-medium">View Profile</span>
+                  <span className={`
+                    ml-2 inline-block transform transition-transform duration-500
+                    ${isHovered ? 'translate-x-2' : ''}
+                  `}>→</span>
+                </div>
+              </div>
+            </a>
           </div>
         </div>
 
