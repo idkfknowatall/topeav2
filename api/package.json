@@ -1,0 +1,9 @@
+{
+  "name": "topea-api",
+  "version": "1.0.0",
+  "description": "API functions for Topea website",
+  "main": "index.js",
+  "dependencies": {
+    "nodemailer": "^6.9.1"
+  }
+}
