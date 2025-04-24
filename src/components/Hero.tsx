@@ -49,6 +49,8 @@ const Hero: React.FC = () => {
         <source
           srcSet="/images/hero-bg-2048.webp 2048w, /images/hero-bg-1536.webp 1536w, /images/hero-bg-1024.webp 1024w, /images/hero-bg-768.webp 768w"
           type="image/webp"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 100vw, (max-width: 1536px) 100vw, 100vw"
+          fetchpriority="high"
         />
         <img
           src="/images/hero-bg.jpg"
@@ -57,6 +59,9 @@ const Hero: React.FC = () => {
           loading="eager"
           fetchPriority="high"
           decoding="async"
+          width="2048"
+          height="1365"
+          style={{contentVisibility: 'auto'}}
         />
       </picture>
 
@@ -72,6 +77,11 @@ const Hero: React.FC = () => {
             className="text-slate-200 text-lg md:text-xl max-w-xl mb-10 leading-relaxed"
             data-lcp="true"
             id="hero-description"
+            style={{
+              contentVisibility: 'auto',
+              containIntrinsicSize: '0 100px',
+              display: 'block'
+            }}
           >
             We create exceptional digital experiences that elevate brands and drive business growth through innovative design and development.
           </p>

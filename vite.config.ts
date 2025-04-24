@@ -18,5 +18,12 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
+    include: ['react', 'react-dom', 'react-icons'],
+  },
+  // Ensure TypeScript files are properly compiled
+  esbuild: {
+    loader: 'tsx',
+    include: ['src/**/*.ts', 'src/**/*.tsx'],
+    exclude: [],
   },
 });

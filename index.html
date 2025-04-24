@@ -17,24 +17,65 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://topea.me" />
     <title>Topea | Web Developer & Designer</title>
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Resource hints for performance optimization -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <!-- Preload critical fonts -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Montserrat:wght@400;700&display=swap&text=WecrateexcpionldgshvbumwITDR">
 
     <!-- Critical fonts with font-display:swap -->
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Montserrat:wght@400;700&display=swap&text=WecrateexcpionldgshvbumwITDR" rel="stylesheet" media="print" onload="this.media='all'">
+
     <!-- Fallback for no JavaScript -->
     <noscript>
       <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Montserrat:wght@400;700&display=swap&text=WecrateexcpionldgshvbumwITDR" rel="stylesheet">
     </noscript>
 
-    <!-- Preload critical images -->
-    <link rel="preload" href="/images/hero-bg-1024.webp" as="image" type="image/webp" media="(max-width: 1024px)">
-    <link rel="preload" href="/images/hero-bg-2048.webp" as="image" type="image/webp" media="(min-width: 1025px)">
+    <!-- Font loading optimization -->
+    <style>
+      /* Optimize font loading */
+      @font-face {
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: local('Montserrat Regular'), local('Montserrat-Regular');
+      }
+      @font-face {
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: local('Montserrat Bold'), local('Montserrat-Bold');
+      }
+      @font-face {
+        font-family: 'Fraunces';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: local('Fraunces Regular'), local('Fraunces-Regular');
+      }
+      @font-face {
+        font-family: 'Fraunces';
+        font-style: normal;
+        font-weight: 700;
+        font-display: swap;
+        src: local('Fraunces Bold'), local('Fraunces-Bold');
+      }
+    </style>
+
+    <!-- Preload critical images with dimensions to prevent layout shifts -->
+    <link rel="preload" href="/images/hero-bg-1024.webp" as="image" type="image/webp" media="(max-width: 1024px)" fetchpriority="high">
+    <link rel="preload" href="/images/hero-bg-2048.webp" as="image" type="image/webp" media="(min-width: 1025px)" fetchpriority="high">
+
+    <!-- Critical JavaScript will be preloaded by Vite during build -->
 
     <!-- Inline critical CSS -->
     <style>
-      /* Critical CSS for hero section */
+      /* Critical CSS for hero section and initial render */
       #hero-description {
         visibility: visible !important;
         content-visibility: auto;
@@ -62,11 +103,135 @@
       .max-w-xl {
         max-width: 36rem;
       }
+      /* Additional critical styles */
+      .container {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .relative {
+        position: relative;
+      }
+      .absolute {
+        position: absolute;
+      }
+      .inset-0 {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+      .z-0 {
+        z-index: 0;
+      }
+      .z-10 {
+        z-index: 10;
+      }
+      .z-20 {
+        z-index: 20;
+      }
+      .h-screen {
+        height: 100vh;
+      }
+      .w-full {
+        width: 100%;
+      }
+      .h-full {
+        height: 100%;
+      }
+      .object-cover {
+        object-fit: cover;
+      }
+      .opacity-15 {
+        opacity: 0.15;
+      }
+      .bg-primary-900 {
+        --tw-bg-opacity: 1;
+        background-color: rgb(15 30 62 / var(--tw-bg-opacity));
+      }
+      .text-white {
+        --tw-text-opacity: 1;
+        color: rgb(255 255 255 / var(--tw-text-opacity));
+      }
+      .font-serif {
+        font-family: Fraunces, serif;
+      }
+      .text-4xl {
+        font-size: 2.25rem;
+        line-height: 2.5rem;
+      }
+      .font-bold {
+        font-weight: 700;
+      }
+      .flex {
+        display: flex;
+      }
+      .items-center {
+        align-items: center;
+      }
+      .justify-center {
+        justify-content: center;
+      }
+      .overflow-hidden {
+        overflow: hidden;
+      }
+      .px-4 {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      .text-center {
+        text-align: center;
+      }
+      @media (min-width: 768px) {
+        .md\:text-left {
+          text-align: left;
+        }
+        .md\:px-6 {
+          padding-left: 1.5rem;
+          padding-right: 1.5rem;
+        }
+        .md\:text-6xl {
+          font-size: 3.75rem;
+          line-height: 1;
+        }
+      }
+      @media (min-width: 1024px) {
+        .lg\:text-7xl {
+          font-size: 4.5rem;
+          line-height: 1;
+        }
+      }
     </style>
   </head>
   <body>
     <div id="root"></div>
     <!-- Defer non-critical JavaScript -->
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/main.tsx" defer></script>
+
+    <!-- Optimize CSS loading -->
+    <script>
+      // Inline script to load CSS asynchronously
+      const loadCSS = (href) => {
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.media = 'print';
+        document.head.appendChild(link);
+
+        // Set timeout to switch media to all
+        setTimeout(() => {
+          link.onload = null;
+          link.media = 'all';
+        }, 0);
+      };
+
+      // Load main CSS file after initial render
+      window.addEventListener('load', () => {
+        const mainCSSLink = document.querySelector('link[href*="index"]');
+        if (mainCSSLink) {
+          mainCSSLink.media = 'all';
+        }
+      });
+    </script>
   </body>
 </html>
