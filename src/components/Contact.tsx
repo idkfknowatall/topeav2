@@ -223,7 +223,7 @@ const Contact: React.FC = () => {
                         <div className="absolute inset-0 bg-gradient-to-r from-secondary-400 to-secondary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <div className="absolute -inset-1 bg-gradient-to-r from-secondary-400 to-primary-600 opacity-30 blur-xl group-hover:opacity-70 transition-opacity duration-500 group-hover:duration-200 animate-pulse-slow"></div>
 
-                        <div className="relative flex flex-col items-center text-center z-10 transition-colors duration-300 group-hover:text-primary-900">
+                        <div className="relative flex flex-col items-center text-center z-20 transition-colors duration-300 group-hover:text-primary-900">
                           <h4 className="font-serif text-lg font-bold mb-2">Flexible Budget Options</h4>
                           <p className="text-sm opacity-90 group-hover:opacity-100">
                             No project is too big or small - we fit every budget with tailored solutions.
@@ -231,8 +231,8 @@ const Contact: React.FC = () => {
                           <input type="hidden" name="budget" value="flexible" />
                         </div>
 
-                        <div className="absolute top-0 right-0 -mt-3 -mr-3 h-16 w-16 bg-secondary-500 rounded-full opacity-50 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110"></div>
-                        <div className="absolute bottom-0 left-0 -mb-3 -ml-3 h-16 w-16 bg-primary-900 rounded-full opacity-50 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110"></div>
+                        <div className="absolute top-0 right-0 -mt-3 -mr-3 h-16 w-16 bg-secondary-500 rounded-full opacity-50 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 z-10"></div>
+                        <div className="absolute bottom-0 left-0 -mb-4 -ml-4 h-12 w-12 bg-primary-900 rounded-full opacity-50 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 z-10"></div>
                       </div>
                     </div>
                   </div>
