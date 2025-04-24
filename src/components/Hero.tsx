@@ -57,7 +57,7 @@ const Hero: React.FC = () => {
           alt="Hero background"
           className="absolute inset-0 z-0 w-full h-full object-cover opacity-15 parallax-bg"
           loading="eager"
-          fetchPriority="high"
+          fetchpriority="high"
           decoding="async"
           width="2048"
           height="1365"

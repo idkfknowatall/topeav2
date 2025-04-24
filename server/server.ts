@@ -18,10 +18,10 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? 'https://topea.me' 
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://topea.me', 'http://91.108.80.187:3000', 'http://91.108.80.187']
     : ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:4173'],
-  methods: ['POST'],
+  methods: ['POST', 'OPTIONS'],
   credentials: true
 }));
 
@@ -30,9 +30,9 @@ const requestCounts = new Map();
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour in milliseconds
 const MAX_REQUESTS_PER_IP = 5;
 
-const rateLimiter = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+const rateLimiter = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
   const ip = req.ip || req.socket.remoteAddress || 'unknown';
-  
+
   if (!requestCounts.has(ip)) {
     requestCounts.set(ip, {
       count: 1,
@@ -41,9 +41,9 @@ const rateLimiter = (req: express.Request, res: express.Response, next: express.
     next();
     return;
   }
-  
+
   const record = requestCounts.get(ip);
-  
+
   // Reset count if the window has passed
   if (Date.now() > record.resetTime) {
     record.count = 1;
@@ -51,14 +51,15 @@ const rateLimiter = (req: express.Request, res: express.Response, next: express.
     next();
     return;
   }
-  
+
   // Check if rate limit exceeded
   if (record.count >= MAX_REQUESTS_PER_IP) {
-    return res.status(429).json({ 
-      error: 'Too many requests, please try again later.' 
+    res.status(429).json({
+      error: 'Too many requests, please try again later.'
     });
+    return;
   }
-  
+
   // Increment count and proceed
   record.count++;
   next();
@@ -80,27 +81,30 @@ const transporter = nodemailer.createTransport({
 });
 
 // Contact form endpoint
-app.post('/api/contact', rateLimiter, async (req, res) => {
+app.post('/api/contact', rateLimiter, async (req, res): Promise<void> => {
   try {
     const { name, email, projectType, budget, message, honeypot } = req.body;
-    
+
     // Check honeypot field (spam protection)
     if (honeypot) {
       // This is likely a bot, but we'll return a 200 to avoid alerting the bot
-      return res.status(200).json({ success: true });
+      res.status(200).json({ success: true });
+      return;
     }
-    
+
     // Validate required fields
     if (!name || !email || !message) {
-      return res.status(400).json({ error: 'Name, email, and message are required' });
+      res.status(400).json({ error: 'Name, email, and message are required' });
+      return;
     }
-    
+
     // Validate email format
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: 'Invalid email format' });
+      res.status(400).json({ error: 'Invalid email format' });
+      return;
     }
-    
+
     // Prepare email content
     const mailOptions = {
       from: 'contact@topea.me',
@@ -125,10 +129,10 @@ ${message}
 <p>${message.replace(/\n/g, '<br>')}</p>
       `
     };
-    
+
     // Send email
     await transporter.sendMail(mailOptions);
-    
+
     // Send auto-reply to the user
     const autoReplyOptions = {
       from: 'contact@topea.me',
@@ -160,9 +164,9 @@ The Topea Team
 <p>Best regards,<br>The Topea Team</p>
       `
     };
-    
+
     await transporter.sendMail(autoReplyOptions);
-    
+
     res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error sending email:', error);
@@ -173,8 +177,8 @@ The Topea Team
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../dist')));
-  
-  app.get('*', (req, res) => {
+
+  app.get('*', (_req, res) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
   });
 }
