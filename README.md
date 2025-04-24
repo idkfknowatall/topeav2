@@ -6,12 +6,20 @@ A modern, responsive portfolio website built with React, TypeScript, and Tailwin
 
 ## 🚀 Technologies Used
 
+### Frontend
 - **React 18**: For building the user interface
 - **TypeScript**: For type-safe code
 - **Vite**: For fast development and optimized builds
 - **Tailwind CSS**: For utility-first styling
 - **React Icons**: For high-quality icons
 - **Responsive Design**: Mobile-first approach for all screen sizes
+
+### Backend
+- **Express**: For the API server
+- **Nodemailer**: For sending emails
+- **CORS**: For secure cross-origin requests
+- **Dotenv**: For environment variable management
+- **TypeScript**: For type-safe server code
 
 ## 📁 Project Structure
 
@@ -34,10 +42,17 @@ topea.me/
 │   ├── main.tsx          # Entry point
 │   ├── types.ts          # TypeScript type definitions
 │   └── index.css         # Global styles
+├── server/               # Server-side code
+│   ├── server.ts         # Express server for handling form submissions
+│   ├── package.json      # Server dependencies
+│   └── tsconfig.json     # TypeScript configuration for server
 ├── index.html            # HTML template
 ├── tailwind.config.js    # Tailwind CSS configuration
 ├── tsconfig.json         # TypeScript configuration
 ├── vite.config.ts        # Vite configuration
+├── .env                  # Environment variables (not in git)
+├── .env.development      # Development environment variables
+├── .env.production       # Production environment variables
 └── package.json          # Project dependencies and scripts
 ```
 
@@ -56,21 +71,32 @@ topea.me/
    cd topea.me
    ```
 
-2. Install dependencies:
+2. Install dependencies for both frontend and server:
    ```bash
    npm install
-   # or
-   yarn install
+   cd server
+   npm install
+   cd ..
    ```
 
-3. Start the development server:
+3. Create a `.env` file in the root directory with your email credentials:
+   ```
+   EMAIL_PASSWORD=your_email_password
+   PORT=3001
+   NODE_ENV=development
+   ```
+
+4. Start the development server:
    ```bash
    npm run dev -- --host
-   # or
-   yarn dev --host
    ```
 
-4. Open your browser and navigate to:
+5. In a separate terminal, start the API server:
+   ```bash
+   npm run server:dev
+   ```
+
+6. Open your browser and navigate to:
    - Local: http://localhost:5173/
    - Network: http://[your-ip-address]:5173/ (for testing on other devices)
 
@@ -136,9 +162,15 @@ The services section showcases:
 ### Contact Section
 
 The contact section provides:
-- Contact form
+- Fully functional contact form with email sending capability
 - Social media links
 - Location information
+
+The contact form uses a secure server-side implementation with:
+- SMTP email sending via Nodemailer
+- Form validation and sanitization
+- Honeypot spam protection
+- Rate limiting to prevent abuse
 
 ### Footer Component
 
@@ -284,40 +316,63 @@ The website is compatible with:
 ### Building for Production
 
 ```bash
+# Build the frontend
 npm run build
+
+# Build the server
+npm run server:build
 ```
 
-This creates a production-ready build in the `dist` directory.
+This creates a production-ready build in the `dist` directory for the frontend and in `server/dist` for the server.
 
 ### Deploying to a Web Server
 
-Upload the contents of the `dist` directory to your web server.
-
-### Deploying to GitHub Pages
-
-1. Install the gh-pages package:
+1. Upload the contents of the `dist` directory to your web server
+2. Upload the contents of the `server` directory to your server
+3. Install server dependencies:
    ```bash
-   npm install --save-dev gh-pages
+   cd server
+   npm install --production
    ```
-
-2. Add these scripts to package.json:
-   ```json
-   "predeploy": "npm run build",
-   "deploy": "gh-pages -d dist"
+4. Set up environment variables on your server:
    ```
-
-3. Deploy:
+   EMAIL_PASSWORD=your_email_password
+   PORT=3001
+   NODE_ENV=production
+   ```
+5. Start the server:
    ```bash
-   npm run deploy
+   npm start
    ```
 
-### Deploying to Netlify/Vercel
+### Deploying to a VPS or Dedicated Server
 
-1. Connect your GitHub repository to Netlify or Vercel
-2. Configure the build settings:
+1. Clone the repository on your server
+2. Build both frontend and server:
+   ```bash
+   npm install
+   npm run build
+   cd server
+   npm install
+   npm run build
+   ```
+3. Set up environment variables
+4. Use PM2 or similar to keep the server running:
+   ```bash
+   npm install -g pm2
+   pm2 start server/dist/server.js
+   ```
+
+### Deploying to Netlify/Vercel with Serverless Functions
+
+For platforms like Netlify or Vercel, you'll need to adapt the server code to use serverless functions:
+
+1. Create a serverless function for the contact form API
+2. Update the API URL in the frontend code
+3. Configure the build settings:
    - Build command: `npm run build`
    - Publish directory: `dist`
-3. Deploy
+4. Set up environment variables in the platform's dashboard
 
 ## 📄 License
 

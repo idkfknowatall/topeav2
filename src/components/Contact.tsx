@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
 
+// API URL - use environment variable or default to localhost in development
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 interface FormState {
   name: string;
   email: string;
   projectType: string;
   budget: string;
   message: string;
+  honeypot?: string; // Hidden field to catch bots
 }
 
 interface FormErrors {
@@ -21,7 +25,8 @@ const Contact: React.FC = () => {
     email: '',
     projectType: '',
     budget: '',
-    message: ''
+    message: '',
+    honeypot: ''
   });
 
   const [errors, setErrors] = useState<FormErrors>({});
@@ -69,14 +74,31 @@ const Contact: React.FC = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
 
     if (validateForm()) {
       setIsSubmitting(true);
 
-      // Simulate API call
-      setTimeout(() => {
+      try {
+        const response = await fetch(`${API_URL}/api/contact`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Something went wrong. Please try again later.');
+        }
+
+        // Success
         setIsSubmitting(false);
         setIsSubmitted(true);
         setFormData({
@@ -84,9 +106,14 @@ const Contact: React.FC = () => {
           email: '',
           projectType: '',
           budget: '',
-          message: ''
+          message: '',
+          honeypot: ''
         });
-      }, 1500);
+      } catch (error) {
+        setIsSubmitting(false);
+        setSubmitError(error instanceof Error ? error.message : 'Failed to send message. Please try again.');
+        console.error('Error submitting form:', error);
+      }
     }
   };
 
@@ -151,6 +178,13 @@ const Contact: React.FC = () => {
                   <div className="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-lg relative mb-6 shadow-soft">
                     <strong className="font-bold">Thank you for contacting us!</strong>
                     <span className="block sm:inline"> Your message has been received. Our design team will review your requirements and respond promptly.</span>
+                  </div>
+                ) : null}
+
+                {submitError ? (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg relative mb-6 shadow-soft">
+                    <strong className="font-bold">Error:</strong>
+                    <span className="block sm:inline"> {submitError}</span>
                   </div>
                 ) : null}
 
@@ -253,6 +287,22 @@ const Contact: React.FC = () => {
                       placeholder="Tell us about your website design needs, SEO requirements, and project goals..."
                     ></textarea>
                     {errors.message && <p className="mt-1 text-sm text-red-500">{errors.message}</p>}
+                  </div>
+
+                  {/* Honeypot field - hidden from users but bots will fill it out */}
+                  <div className="hidden" aria-hidden="true">
+                    <label htmlFor="honeypot" className="hidden">
+                      Leave this field empty
+                    </label>
+                    <input
+                      type="text"
+                      id="honeypot"
+                      name="honeypot"
+                      value={formData.honeypot}
+                      onChange={handleChange}
+                      tabIndex={-1}
+                      autoComplete="off"
+                    />
                   </div>
 
                   <button
