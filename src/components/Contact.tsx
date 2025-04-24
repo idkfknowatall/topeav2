@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
 
-// API URL - use environment variable or default to localhost in development
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
 interface FormState {
   name: string;
   email: string;
@@ -84,7 +81,10 @@ const Contact: React.FC = () => {
       setIsSubmitting(true);
 
       try {
-        const response = await fetch(`${API_URL}/api/contact`, {
+        // Use the current origin to avoid CORS issues
+        const apiUrl = window.location.origin;
+
+        const response = await fetch(`${apiUrl}/api/contact`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
