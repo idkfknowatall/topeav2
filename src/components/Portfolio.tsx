@@ -124,17 +124,6 @@ const Portfolio: React.FC = () => {
             </div>
           ))}
         </div>
-
-        <div className={`mt-16 text-center transition-all duration-700 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <p className="text-slate-600 mb-6 text-lg">
-            Looking for more examples of our work? We have many more projects to share.
-          </p>
-          <button
-            className="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-all transform hover:scale-105 hover:shadow-elevated focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50"
-          >
-            View Full Portfolio
-          </button>
-        </div>
       </div>
     </section>
   );
