@@ -81,8 +81,9 @@ const Contact: React.FC = () => {
       setIsSubmitting(true);
 
       try {
-        // Use the current origin to avoid CORS issues
-        const apiUrl = window.location.origin;
+        // Use a consistent API endpoint that works for both www and non-www domains
+        // This ensures we don't have CORS issues with redirects
+        const apiUrl = 'https://topea.me';
 
         const response = await fetch(`${apiUrl}/api/contact`, {
           method: 'POST',

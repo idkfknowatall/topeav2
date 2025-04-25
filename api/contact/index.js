@@ -35,7 +35,10 @@ module.exports = async (req, res) => {
   const requestOrigin = req.headers.origin;
 
   // Set the Access-Control-Allow-Origin header ONLY if the request origin is in our allowed list
-  if (requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin)) {
+  // For preflight requests, we'll use a wildcard to avoid redirect issues
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+  } else if (requestOrigin && ALLOWED_ORIGINS.includes(requestOrigin)) {
     res.setHeader('Access-Control-Allow-Origin', requestOrigin);
   }
 
