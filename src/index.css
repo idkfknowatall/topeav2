@@ -13,8 +13,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   /* Optimize text rendering */
   text-rendering: optimizeLegibility;
-  /* Prevent synthetic font variants */
-  font-synthesis: none;
 }
 
 /* Specific optimizations for mobile devices */
@@ -22,10 +20,6 @@ body {
   body {
     /* Prevent font scaling in landscape */
     -webkit-text-size-adjust: 100%;
-    /* Force consistent font weight */
-    font-variant-ligatures: none;
-    /* Ensure consistent font rendering */
-    font-feature-settings: "kern" 1, "liga" 0;
   }
 
   /* Fix for inconsistent letter thickness - target main content only */
@@ -40,17 +34,16 @@ body {
   main a,
   main div:not([class*="mobile"]),
   main li {
-    /* Use a more subtle approach for GPU rendering */
-    backface-visibility: hidden;
     /* Ensure consistent font rendering */
     font-kerning: normal;
-    /* Apply a very slight letter spacing adjustment */
-    letter-spacing: 0.01px;
-  }
-
-  /* Apply a subtle text shadow to improve text rendering on paragraphs */
-  main p {
+    /* Disable ligatures which can cause inconsistent thickness */
+    font-variant-ligatures: none;
+    /* Ensure consistent font features */
+    font-feature-settings: "kern" 1;
+    /* Apply a subtle text shadow to improve rendering */
     text-shadow: 0 0 1px transparent;
+    /* Apply a very slight letter spacing adjustment */
+    letter-spacing: 0.01em;
   }
 
   /* Ensure mobile menu text rendering is not affected, but preserve transforms for animation */
