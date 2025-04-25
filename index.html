@@ -309,8 +309,17 @@
               document.body.classList.add('fonts-loaded');
 
               // Apply fixes for inconsistent letter thickness
+              // Exclude mobile menu elements from these fixes
               const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, a, div, li');
               textElements.forEach(function(el) {
+                // Skip elements that are part of the mobile menu
+                if (el.closest('[class*="translate-x"]') ||
+                    el.classList.contains('mobile-menu') ||
+                    el.closest('.mobile-menu') ||
+                    (el.parentElement && el.parentElement.classList.contains('md:hidden'))) {
+                  return;
+                }
+
                 // Force consistent font rendering
                 el.style.fontKerning = 'normal';
                 // Disable ligatures which can cause inconsistent thickness
@@ -323,13 +332,22 @@
                 el.style.letterSpacing = '0';
               });
 
-              // Force a redraw of the entire page
-              const scrollTop = document.documentElement.scrollTop;
-              document.documentElement.style.display = 'none';
-              // Trigger reflow
-              document.documentElement.offsetHeight;
-              document.documentElement.style.display = '';
-              document.documentElement.scrollTop = scrollTop;
+              // Use a more targeted approach to force redraw without affecting the mobile menu
+              // This avoids interfering with the mobile menu's transform properties
+              const contentElements = document.querySelectorAll('main > section, footer');
+              contentElements.forEach(function(el) {
+                // Skip if this is a mobile menu or contains mobile menu elements
+                if (el.classList.contains('mobile-menu') || el.querySelector('.mobile-menu')) {
+                  return;
+                }
+
+                // Force a redraw of this element only
+                const originalDisplay = el.style.display;
+                el.style.display = 'none';
+                // Trigger reflow
+                el.offsetHeight;
+                el.style.display = originalDisplay;
+              });
             }, 300); // Longer timeout to ensure fonts are fully loaded
           });
         }
@@ -360,17 +378,18 @@
       }
 
       /* Target specific elements that might have inconsistent letter thickness */
-      .fonts-loaded p,
-      .fonts-loaded h1,
-      .fonts-loaded h2,
-      .fonts-loaded h3,
-      .fonts-loaded h4,
-      .fonts-loaded h5,
-      .fonts-loaded h6,
-      .fonts-loaded span,
-      .fonts-loaded a,
-      .fonts-loaded div,
-      .fonts-loaded li {
+      /* Exclude mobile menu elements from these fixes */
+      .fonts-loaded p:not([class*="mobile-menu"]),
+      .fonts-loaded h1:not([class*="mobile-menu"]),
+      .fonts-loaded h2:not([class*="mobile-menu"]),
+      .fonts-loaded h3:not([class*="mobile-menu"]),
+      .fonts-loaded h4:not([class*="mobile-menu"]),
+      .fonts-loaded h5:not([class*="mobile-menu"]),
+      .fonts-loaded h6:not([class*="mobile-menu"]),
+      .fonts-loaded span:not([class*="mobile-menu"]),
+      .fonts-loaded a:not([class*="mobile-menu"]),
+      .fonts-loaded div:not(.mobile-menu):not([class*="mobile-menu"]),
+      .fonts-loaded li:not([class*="mobile-menu"]) {
         /* Force consistent font rendering */
         font-kerning: normal !important;
         /* Disable ligatures which can cause inconsistent thickness */

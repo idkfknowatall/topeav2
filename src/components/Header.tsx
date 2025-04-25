@@ -74,7 +74,7 @@ const Header: React.FC = () => {
         </button>
 
         {/* Mobile Menu */}
-        <div className={`fixed inset-0 bg-primary-900 bg-opacity-95 flex flex-col justify-center items-center transition-transform duration-300 ease-in-out ${
+        <div className={`mobile-menu fixed inset-0 bg-primary-900 bg-opacity-95 flex flex-col justify-center items-center transition-transform duration-300 ease-in-out ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         } md:hidden`}>
           <div className="absolute top-6 left-6 flex items-center">

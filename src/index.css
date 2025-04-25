@@ -31,7 +31,21 @@ body {
   }
 
   /* Fix for inconsistent letter thickness */
-  p, h1, h2, h3, h4, h5, h6, span, a, button, input, textarea, select, li {
+  /* Exclude mobile menu elements from these fixes */
+  p:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  h1:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  h2:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  h3:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  h4:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  h5:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  h6:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  span:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  a:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  button:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  input:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  textarea:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  select:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+  li:not([class*="mobile-menu"]):not([class*="md:hidden"]) {
     /* Force GPU rendering to prevent inconsistent thickness */
     transform: translateZ(0);
     /* Ensure consistent font rendering */
