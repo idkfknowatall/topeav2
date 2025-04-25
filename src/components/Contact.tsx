@@ -81,11 +81,12 @@ const Contact: React.FC = () => {
       setIsSubmitting(true);
 
       try {
-        // Get the current domain to avoid CORS issues
-        const currentDomain = window.location.origin;
-        console.log("Using current domain for API request:", currentDomain);
+        // Use the appropriate API endpoint based on the domain
+        // This avoids CORS issues between www and non-www domains
+        const isWwwDomain = window.location.hostname.startsWith('www.');
+        const apiEndpoint = isWwwDomain ? '/api/www-contact' : '/api/contact';
 
-        const response = await fetch(`${currentDomain}/api/contact`, {
+        const response = await fetch(apiEndpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
