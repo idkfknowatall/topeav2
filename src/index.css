@@ -6,13 +6,26 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
+/* Base font styles for all devices */
+html, body {
   @apply font-sans;
-  /* Use consistent font smoothing across all devices */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Optimize text rendering */
   text-rendering: optimizeLegibility;
+}
+
+/* Consolidated font rendering styles */
+.mobile-font-rendering {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+}
+
+.fonts-loaded {
+  font-kerning: normal;
+  font-variant-ligatures: none;
+  font-feature-settings: "kern" 1;
 }
 
 /* Specific optimizations for mobile devices */
@@ -23,17 +36,17 @@ body {
   }
 
   /* Fix for inconsistent letter thickness - target main content only */
-  main p,
-  main h1,
-  main h2,
-  main h3,
-  main h4,
-  main h5,
-  main h6,
-  main span,
-  main a,
-  main div:not([class*="mobile"]),
-  main li {
+  .fonts-loaded main p,
+  .fonts-loaded main h1,
+  .fonts-loaded main h2,
+  .fonts-loaded main h3,
+  .fonts-loaded main h4,
+  .fonts-loaded main h5,
+  .fonts-loaded main h6,
+  .fonts-loaded main span,
+  .fonts-loaded main a,
+  .fonts-loaded main div:not([class*="mobile"]),
+  .fonts-loaded main li {
     /* Ensure consistent font rendering */
     font-kerning: normal;
     /* Disable ligatures which can cause inconsistent thickness */
@@ -44,6 +57,13 @@ body {
     text-shadow: 0 0 1px transparent;
     /* Apply a very slight letter spacing adjustment */
     letter-spacing: 0.01em;
+    /* Use a more subtle approach for GPU rendering */
+    backface-visibility: hidden;
+  }
+
+  /* Apply a subtle text shadow to improve text rendering on paragraphs */
+  .fonts-loaded main p {
+    text-shadow: 0 0 1px transparent;
   }
 
   /* Ensure mobile menu text rendering is not affected, but preserve transforms for animation */

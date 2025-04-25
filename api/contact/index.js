@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const { validateEmail, createMailOptions, createAutoReplyOptions, isSpam } = require('../../utils/contactUtils');
 
 // Create email transporter with the updated settings
 const transporter = nodemailer.createTransport({
@@ -94,7 +95,7 @@ module.exports = async (req, res) => {
     const { name, email, projectType, budget, message, honeypot } = req.body;
 
     // Check honeypot field (spam protection)
-    if (honeypot) {
+    if (isSpam(honeypot)) {
       // This is likely a bot, but we'll return a 200 to avoid alerting the bot
       return res.status(200).json({ success: true });
     }
@@ -105,71 +106,18 @@ module.exports = async (req, res) => {
     }
 
     // Validate email format
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    if (!emailRegex.test(email)) {
+    if (!validateEmail(email)) {
       return res.status(400).json({ error: 'Invalid email format' });
     }
 
-    // Prepare email content
-    const mailOptions = {
-      from: 'contact@topea.me',
-      to: 'contact@topea.me',
-      replyTo: email,
-      subject: `New Contact Form Submission from ${name}`,
-      text: `
-Name: ${name}
-Email: ${email}
-Project Type: ${projectType || 'Not specified'}
-Budget: ${budget || 'Not specified'}
-Message:
-${message}
-      `,
-      html: `
-<h2>New Contact Form Submission</h2>
-<p><strong>Name:</strong> ${name}</p>
-<p><strong>Email:</strong> ${email}</p>
-<p><strong>Project Type:</strong> ${projectType || 'Not specified'}</p>
-<p><strong>Budget:</strong> ${budget || 'Not specified'}</p>
-<p><strong>Message:</strong></p>
-<p>${message.replace(/\n/g, '<br>')}</p>
-      `
-    };
+    // Create mail options using the shared utility functions
+    const mailOptions = createMailOptions(name, email, projectType, budget, message);
+    const autoReplyOptions = createAutoReplyOptions(name, email, projectType, budget, message);
 
-    // Send email
+    // Send the notification email
     await transporter.sendMail(mailOptions);
 
-    // Send auto-reply to the user
-    const autoReplyOptions = {
-      from: 'contact@topea.me',
-      to: email,
-      subject: 'Thank you for contacting Topea',
-      text: `
-Dear ${name},
-
-Thank you for reaching out to us. We have received your message and will get back to you within 24 business hours.
-
-Here's a summary of your inquiry:
-- Project Type: ${projectType || 'Not specified'}
-- Budget: ${budget || 'Not specified'}
-- Message: ${message}
-
-Best regards,
-The Topea Team
-      `,
-      html: `
-<h2>Thank you for contacting Topea</h2>
-<p>Dear ${name},</p>
-<p>Thank you for reaching out to us. We have received your message and will get back to you within 24 business hours.</p>
-<p>Here's a summary of your inquiry:</p>
-<ul>
-  <li><strong>Project Type:</strong> ${projectType || 'Not specified'}</li>
-  <li><strong>Budget:</strong> ${budget || 'Not specified'}</li>
-  <li><strong>Message:</strong> ${message.replace(/\n/g, '<br>')}</li>
-</ul>
-<p>Best regards,<br>The Topea Team</p>
-      `
-    };
-
+    // Send the auto-reply email
     await transporter.sendMail(autoReplyOptions);
 
     return res.status(200).json({ success: true });

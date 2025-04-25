@@ -23,30 +23,10 @@
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
 
-    <!-- Use Google Fonts with optimized loading strategy -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Optimized Google Fonts loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Fraunces:wght@400;700&display=block" rel="stylesheet">
-
-    <!-- Font rendering optimization -->
-    <style>
-      /* Apply font-smoothing consistently */
-      html {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        text-rendering: optimizeLegibility;
-      }
-
-      /* Fix for inconsistent letter thickness on mobile */
-      @media (max-width: 767px) {
-        body {
-          /* Prevent font scaling in landscape */
-          -webkit-text-size-adjust: 100%;
-          /* Ensure consistent font rendering */
-          text-rendering: optimizeLegibility;
-        }
-      }
-    </style>
 
     <!-- Preload critical fonts to prevent FOUT -->
     <link rel="preload" as="font" href="https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXp-p7K4KLg.woff2" type="font/woff2" crossorigin>
@@ -60,37 +40,13 @@
 
     <!-- Inline critical CSS -->
     <style>
-      /* Mobile font rendering optimization */
+      /* Critical CSS for mobile font rendering - main styles in index.css */
       @media (max-width: 767px) {
         html, body {
           -webkit-text-size-adjust: 100%;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
           text-rendering: optimizeLegibility;
-        }
-
-        /* Fix for inconsistent letter thickness on mobile */
-        /* Target only text elements in the main content */
-        main p,
-        main h1,
-        main h2,
-        main h3,
-        main h4,
-        main h5,
-        main h6,
-        main span,
-        main a,
-        main div:not([class*="mobile"]) {
-          /* Subtle letter spacing adjustment */
-          letter-spacing: 0.01em;
-          /* Ensure consistent kerning */
-          font-kerning: normal;
-          /* Disable ligatures which can cause inconsistent thickness */
-          font-variant-ligatures: none;
-          /* Ensure consistent font features */
-          font-feature-settings: "kern" 1;
-          /* Apply a subtle text shadow to improve rendering */
-          text-shadow: 0 0 1px transparent;
         }
       }
 
@@ -274,7 +230,7 @@
         }
       });
 
-      // Enhanced font optimization for mobile devices - fix for inconsistent letter thickness
+      // Simplified font optimization for mobile devices
       (function() {
         // Check if device is mobile
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -283,156 +239,52 @@
           // Add mobile-specific font rendering class
           document.documentElement.classList.add('mobile-font-rendering');
 
-          // Create a font observer to ensure fonts are loaded before applying fixes
-          const fontLoadedCheck = () => {
-            // Check if fonts are loaded
+          // Wait for fonts to load before applying fixes
+          const applyFontRendering = () => {
             document.fonts.ready.then(function() {
               console.log("All fonts are loaded");
 
               // Add a small delay to ensure fonts are fully rendered
               setTimeout(function() {
-                // Force repaint by toggling a class
+                // Apply font rendering class - CSS will handle the styling
                 document.body.classList.add('fonts-loaded');
 
-                // Apply fixes for inconsistent letter thickness using a more targeted approach
+                // Force a gentle repaint of the main content only
                 const mainContent = document.querySelector('main');
                 if (mainContent) {
-                  // Only target text elements in the main content area, not in the header/mobile menu
-                  const textElements = mainContent.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, a, div, li');
-
-                  textElements.forEach(function(el) {
-                    // Skip elements that are part of the mobile menu or have transform properties
-                    // More careful check to preserve mobile menu functionality
-                    if (el.classList.contains('mobile-menu') ||
-                        el.closest('.mobile-menu') ||
-                        el.closest('[class*="md:hidden"]') ||
-                        el.closest('header') || // Skip all header elements to be safe
-                        el.classList.contains('translate-x-0') ||
-                        el.classList.contains('translate-x-full') ||
-                        (el.className && el.className.indexOf('translate') !== -1) ||
-                        getComputedStyle(el).transform !== 'none') {
-                      return;
-                    }
-
-                    // Apply more targeted fixes for inconsistent letter thickness
-                    el.style.fontKerning = 'normal';
-                    el.style.fontVariantLigatures = 'none';
-                    el.style.fontFeatureSettings = '"kern" 1';
-
-                    // Apply a subtle text shadow to improve rendering
-                    el.style.textShadow = '0 0 1px transparent';
-
-                    // Apply a very slight letter spacing adjustment
-                    // This can help with inconsistent letter thickness
-                    el.style.letterSpacing = '0.01em';
-                  });
-
-                  // Apply a subtle text shadow to improve text rendering
-                  // This can help with inconsistent letter thickness on some devices
-                  const paragraphs = mainContent.querySelectorAll('p');
-                  paragraphs.forEach(function(p) {
-                    if (!p.closest('.mobile-menu') && !p.closest('[class*="md:hidden"]')) {
-                      p.style.textShadow = '0 0 1px transparent';
-                    }
-                  });
-                }
-
-                // Force a gentle repaint of the main content only
-                if (mainContent) {
-                  // Use a technique that doesn't disrupt the layout
                   const currentOpacity = getComputedStyle(mainContent).opacity;
                   mainContent.style.opacity = '0.99';
                   setTimeout(() => {
                     mainContent.style.opacity = currentOpacity;
                   }, 50);
                 }
-
-              }, 100); // Shorter timeout since we're already waiting for fonts to load
+              }, 100);
             });
           };
 
           // Run the font check when the page loads
           if (document.readyState === 'loading') {
-            window.addEventListener('DOMContentLoaded', fontLoadedCheck);
+            window.addEventListener('DOMContentLoaded', applyFontRendering);
           } else {
-            fontLoadedCheck();
+            applyFontRendering();
           }
         }
       })();
     </script>
 
-    <!-- Add mobile-specific styles for consistent font rendering -->
+    <!-- Font rendering classes - main styles in index.css -->
     <style>
+      /* Minimal classes needed for JavaScript font loading */
       .mobile-font-rendering {
-        /* Use consistent font smoothing */
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-        /* Prevent synthetic font variants */
-        font-synthesis: none;
-        /* Optimize text rendering */
         text-rendering: optimizeLegibility;
       }
 
+      /* Class styled in index.css */
       .fonts-loaded {
-        /* Ensure consistent font rendering */
-        font-kerning: normal;
-        /* Disable ligatures which can cause inconsistent thickness */
-        font-variant-ligatures: none;
-        /* Ensure consistent font features */
-        font-feature-settings: "kern" 1, "liga" 0;
-      }
-
-      /* Target specific elements that might have inconsistent letter thickness */
-      /* More targeted approach to avoid affecting mobile menu */
-      .fonts-loaded main p,
-      .fonts-loaded main h1,
-      .fonts-loaded main h2,
-      .fonts-loaded main h3,
-      .fonts-loaded main h4,
-      .fonts-loaded main h5,
-      .fonts-loaded main h6,
-      .fonts-loaded main span,
-      .fonts-loaded main a,
-      .fonts-loaded main div:not([class*="mobile"]),
-      .fonts-loaded main li {
-        /* Force consistent font rendering */
-        font-kerning: normal;
-        /* Disable ligatures which can cause inconsistent thickness */
-        font-variant-ligatures: none;
-        /* Ensure consistent font features */
-        font-feature-settings: "kern" 1, "liga" 0;
-        /* Use a more subtle approach for GPU rendering */
-        backface-visibility: hidden;
-        /* Apply a very slight letter spacing adjustment */
-        letter-spacing: 0.01px;
-      }
-
-      /* Apply a subtle text shadow to improve text rendering on paragraphs */
-      .fonts-loaded main p {
-        text-shadow: 0 0 1px transparent;
-      }
-
-      /* Ensure mobile menu text rendering is not affected, but preserve transforms for animation */
-      .mobile-menu *:not([class*="translate"]) {
-        /* Don't override transform for elements with translate classes */
-        backface-visibility: visible !important;
-        font-kerning: auto !important;
-        font-variant-ligatures: normal !important;
-        font-feature-settings: normal !important;
-        letter-spacing: normal !important;
-        text-shadow: none !important;
-      }
-
-      /* Preserve the mobile menu's transform properties for animation */
-      .mobile-menu {
-        /* These properties ensure text rendering is good without breaking animation */
-        backface-visibility: visible !important;
-        font-kerning: auto !important;
-        font-variant-ligatures: normal !important;
-        font-feature-settings: normal !important;
-        letter-spacing: normal !important;
-        text-shadow: none !important;
-        /* Do NOT set transform: none here */
+        /* Marker class for JavaScript font loading */
+        visibility: inherit;
       }
     </style>
   </body>
