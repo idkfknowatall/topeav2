@@ -1,8 +1,10 @@
 {
   "version": 2,
+  "routes": [
+    { "src": "/api/www-contact", "dest": "/api/www-contact/index.js" },
+    { "src": "/api/contact", "dest": "/api/contact/index.js" }
+  ],
   "rewrites": [
-    { "source": "/api/contact", "destination": "/api/contact" },
-    { "source": "/api/www-contact", "destination": "/api/www-contact" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],

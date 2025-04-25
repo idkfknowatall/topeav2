@@ -86,6 +86,8 @@ const Contact: React.FC = () => {
         const isWwwDomain = window.location.hostname.startsWith('www.');
         const apiEndpoint = isWwwDomain ? '/api/www-contact' : '/api/contact';
 
+        console.log(`Submitting form to: ${apiEndpoint}`);
+
         const response = await fetch(apiEndpoint, {
           method: 'POST',
           headers: {
@@ -93,6 +95,19 @@ const Contact: React.FC = () => {
           },
           body: JSON.stringify(formData),
         });
+
+        // Log the response status and headers
+        console.log(`Response status: ${response.status}`);
+        console.log(`Response type: ${response.headers.get('content-type')}`);
+
+        // Check if the response is JSON
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          // If not JSON, get the text and log it
+          const text = await response.text();
+          console.error('Non-JSON response:', text);
+          throw new Error('Server returned non-JSON response. Please try again later.');
+        }
 
         const data = await response.json();
 
