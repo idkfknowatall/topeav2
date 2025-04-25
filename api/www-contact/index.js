@@ -1,7 +1,10 @@
 // This is a duplicate of the contact API endpoint for the www subdomain
 // to avoid CORS issues between www and non-www domains
 const nodemailer = require('nodemailer');
-const { validateEmail, createMailOptions, createAutoReplyOptions, isSpam } = require('../../utils/contactUtils');
+// Fix the path to the contactUtils module
+const path = require('path');
+const contactUtilsPath = path.join(process.cwd(), 'utils/contactUtils.js');
+const { validateEmail, createMailOptions, createAutoReplyOptions, isSpam } = require(contactUtilsPath);
 
 // Create email transporter with the updated settings
 const transporter = nodemailer.createTransport({
