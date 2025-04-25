@@ -23,47 +23,68 @@
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
 
-    <!-- Preload critical fonts -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Montserrat:wght@400;700&display=swap&text=WecrateexcpionldgshvbumwITDR">
+    <!-- Improved font loading strategy -->
+    <!-- Load full font files instead of subset to ensure consistent rendering -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Montserrat:wght@400;500;600;700&display=block">
 
-    <!-- Critical fonts with font-display:swap -->
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Montserrat:wght@400;700&display=swap&text=WecrateexcpionldgshvbumwITDR" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- Use display=block to prevent FOUT (Flash of Unstyled Text) -->
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Montserrat:wght@400;500;600;700&display=block" rel="stylesheet" media="print" onload="this.media='all'">
 
     <!-- Fallback for no JavaScript -->
     <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,700&family=Montserrat:wght@400;700&display=swap&text=WecrateexcpionldgshvbumwITDR" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Montserrat:wght@400;500;600;700&display=block" rel="stylesheet">
     </noscript>
 
-    <!-- Font loading optimization -->
+    <!-- Improved font loading optimization -->
     <style>
-      /* Optimize font loading */
+      /* Font definitions with better mobile rendering */
       @font-face {
         font-family: 'Montserrat';
         font-style: normal;
         font-weight: 400;
-        font-display: swap;
+        font-display: block; /* Changed from swap to block to prevent FOUT */
         src: local('Montserrat Regular'), local('Montserrat-Regular');
+        text-rendering: optimizeLegibility;
+      }
+      @font-face {
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 500;
+        font-display: block;
+        src: local('Montserrat Medium'), local('Montserrat-Medium');
+        text-rendering: optimizeLegibility;
+      }
+      @font-face {
+        font-family: 'Montserrat';
+        font-style: normal;
+        font-weight: 600;
+        font-display: block;
+        src: local('Montserrat SemiBold'), local('Montserrat-SemiBold');
+        text-rendering: optimizeLegibility;
       }
       @font-face {
         font-family: 'Montserrat';
         font-style: normal;
         font-weight: 700;
-        font-display: swap;
+        font-display: block;
         src: local('Montserrat Bold'), local('Montserrat-Bold');
+        text-rendering: optimizeLegibility;
       }
       @font-face {
         font-family: 'Fraunces';
         font-style: normal;
         font-weight: 400;
-        font-display: swap;
+        font-display: block;
         src: local('Fraunces Regular'), local('Fraunces-Regular');
+        text-rendering: optimizeLegibility;
       }
       @font-face {
         font-family: 'Fraunces';
         font-style: normal;
         font-weight: 700;
-        font-display: swap;
+        font-display: block;
         src: local('Fraunces Bold'), local('Fraunces-Bold');
+        text-rendering: optimizeLegibility;
       }
     </style>
 
@@ -75,6 +96,24 @@
 
     <!-- Inline critical CSS -->
     <style>
+      /* Mobile font rendering optimization */
+      @media (max-width: 767px) {
+        html, body {
+          -webkit-text-size-adjust: 100%;
+          -webkit-font-smoothing: subpixel-antialiased;
+          font-synthesis: none;
+          text-rendering: optimizeLegibility;
+        }
+
+        /* Fix for bold text appearing with weird contrast on mobile */
+        strong, b, h1, h2, h3, h4, h5, h6,
+        .font-bold, .font-semibold, .font-medium {
+          letter-spacing: -0.01em; /* Slightly tighten letter spacing for bold text */
+          font-weight: 700 !important; /* Ensure consistent font weight */
+          text-shadow: 0 0 0 currentColor; /* Prevent text shadow artifacts */
+        }
+      }
+
       /* Critical CSS for hero section and initial render */
       #hero-description {
         visibility: visible !important;
@@ -230,7 +269,7 @@
     <!-- Defer non-critical JavaScript -->
     <script type="module" src="/src/main.tsx" defer></script>
 
-    <!-- Optimize CSS loading -->
+    <!-- Optimize CSS and Font loading -->
     <script>
       // Inline script to load CSS asynchronously
       const loadCSS = (href) => {
@@ -254,6 +293,50 @@
           mainCSSLink.media = 'all';
         }
       });
+
+      // Font optimization for mobile devices
+      (function() {
+        // Check if device is mobile
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+        if (isMobile) {
+          // Add mobile-specific font rendering class
+          document.documentElement.classList.add('mobile-font-rendering');
+
+          // Force repaint to fix potential font rendering issues
+          window.addEventListener('load', function() {
+            // Small timeout to ensure fonts are loaded
+            setTimeout(function() {
+              // Force repaint by toggling a class
+              document.body.classList.add('fonts-loaded');
+
+              // Apply specific fixes for bold text on mobile
+              const boldElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, strong, b, .font-bold, .font-semibold, .font-medium');
+              boldElements.forEach(function(el) {
+                // Ensure proper font weight
+                el.style.fontWeight = '700';
+                // Slight letter spacing adjustment
+                el.style.letterSpacing = '-0.01em';
+                // Prevent text shadow artifacts
+                el.style.textShadow = '0 0 0 currentColor';
+              });
+            }, 100);
+          });
+        }
+      })();
     </script>
+
+    <!-- Add mobile-specific styles -->
+    <style>
+      .mobile-font-rendering {
+        -webkit-font-smoothing: subpixel-antialiased;
+        -moz-osx-font-smoothing: auto;
+      }
+
+      .fonts-loaded {
+        /* Force repaint */
+        transform: translateZ(0);
+      }
+    </style>
   </body>
 </html>

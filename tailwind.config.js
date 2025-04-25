@@ -4,9 +4,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Montserrat', 'sans-serif'],
-        serif: ['Fraunces', 'serif'],
-        display: ['Playfair Display', 'serif'],
+        sans: ['Montserrat', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+        serif: ['Fraunces', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
+        display: ['Fraunces', 'Georgia', 'serif'],
       },
       colors: {
         primary: {
