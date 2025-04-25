@@ -81,10 +81,11 @@ const Contact: React.FC = () => {
       setIsSubmitting(true);
 
       try {
-        // Use a relative URL to avoid CORS issues with different domains
-        // This will use the same domain the user is currently on
+        // Get the current domain to avoid CORS issues
+        const currentDomain = window.location.origin;
+        console.log("Using current domain for API request:", currentDomain);
 
-        const response = await fetch(`/api/contact`, {
+        const response = await fetch(`${currentDomain}/api/contact`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
