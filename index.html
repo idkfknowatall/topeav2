@@ -327,10 +327,14 @@
 
                   textElements.forEach(function(el) {
                     // Skip elements that are part of the mobile menu or have transform properties
-                    if (el.closest('[class*="translate-x"]') ||
-                        el.classList.contains('mobile-menu') ||
+                    // More careful check to preserve mobile menu functionality
+                    if (el.classList.contains('mobile-menu') ||
                         el.closest('.mobile-menu') ||
                         el.closest('[class*="md:hidden"]') ||
+                        el.closest('header') || // Skip all header elements to be safe
+                        el.classList.contains('translate-x-0') ||
+                        el.classList.contains('translate-x-full') ||
+                        (el.className && el.className.indexOf('translate') !== -1) ||
                         getComputedStyle(el).transform !== 'none') {
                       return;
                     }
@@ -434,16 +438,27 @@
         text-shadow: 0 0 1px transparent;
       }
 
-      /* Ensure mobile menu is not affected */
-      .mobile-menu,
-      .mobile-menu * {
-        transform: none !important;
+      /* Ensure mobile menu text rendering is not affected, but preserve transforms for animation */
+      .mobile-menu *:not([class*="translate"]) {
+        /* Don't override transform for elements with translate classes */
         backface-visibility: visible !important;
         font-kerning: auto !important;
         font-variant-ligatures: normal !important;
         font-feature-settings: normal !important;
         letter-spacing: normal !important;
         text-shadow: none !important;
+      }
+
+      /* Preserve the mobile menu's transform properties for animation */
+      .mobile-menu {
+        /* These properties ensure text rendering is good without breaking animation */
+        backface-visibility: visible !important;
+        font-kerning: auto !important;
+        font-variant-ligatures: normal !important;
+        font-feature-settings: normal !important;
+        letter-spacing: normal !important;
+        text-shadow: none !important;
+        /* Do NOT set transform: none here */
       }
     </style>
   </body>
