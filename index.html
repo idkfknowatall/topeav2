@@ -23,52 +23,48 @@
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
 
-    <!-- Self-hosted fonts for consistent rendering -->
+    <!-- Preload critical fonts -->
+    <link rel="preload" as="font" href="https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXp-p7K4KLg.woff2" type="font/woff2" crossorigin>
+    <link rel="preload" as="font" href="https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM73w5aXp-p7K4KLg.woff2" type="font/woff2" crossorigin>
+
+    <!-- Improved font loading strategy -->
     <style>
-      /* Self-hosted Montserrat font */
+      /* Montserrat font with improved rendering */
       @font-face {
         font-family: 'Montserrat';
         font-style: normal;
         font-weight: 400;
-        font-display: fallback; /* Use fallback to ensure text is visible while font loads */
+        font-display: swap; /* Changed to swap for better performance */
         src: url('https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXp-p7K4KLg.woff2') format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-        font-weight-adjustment: normal;
-        size-adjust: 100%;
       }
 
       @font-face {
         font-family: 'Montserrat';
         font-style: normal;
         font-weight: 700;
-        font-display: fallback;
+        font-display: swap;
         src: url('https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM73w5aXp-p7K4KLg.woff2') format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-        font-weight-adjustment: normal;
-        size-adjust: 100%;
       }
 
-      /* Self-hosted Fraunces font */
+      /* Fraunces font with improved rendering */
       @font-face {
         font-family: 'Fraunces';
         font-style: normal;
         font-weight: 400;
-        font-display: fallback;
+        font-display: swap;
         src: url('https://fonts.gstatic.com/s/fraunces/v31/6NUu8FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0K7iN7hzFUPJH58nib14c7qv8oRcTn.woff2') format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-        font-weight-adjustment: normal;
-        size-adjust: 100%;
       }
 
       @font-face {
         font-family: 'Fraunces';
         font-style: normal;
         font-weight: 700;
-        font-display: fallback;
+        font-display: swap;
         src: url('https://fonts.gstatic.com/s/fraunces/v31/6NUu8FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0K7iN7hzFUPJH58nib14c7qv8oRcTn.woff2') format('woff2');
         unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-        font-weight-adjustment: normal;
-        size-adjust: 100%;
       }
     </style>
 
@@ -96,7 +92,18 @@
         }
 
         /* Fix for inconsistent letter thickness on mobile */
-        p, h1, h2, h3, h4, h5, h6, span, a, div, li {
+        /* More targeted approach to avoid affecting mobile menu */
+        p:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+        h1:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+        h2:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+        h3:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+        h4:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+        h5:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+        h6:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+        span:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+        a:not([class*="mobile-menu"]):not([class*="md:hidden"]),
+        div:not(.mobile-menu):not([class*="mobile-menu"]):not([class*="md:hidden"]),
+        li:not([class*="mobile-menu"]):not([class*="md:hidden"]) {
           /* Force consistent font rendering */
           font-kerning: normal;
           /* Disable ligatures which can cause inconsistent thickness */
@@ -292,7 +299,7 @@
         }
       });
 
-      // Font optimization for mobile devices - fix for inconsistent letter thickness
+      // Enhanced font optimization for mobile devices - fix for inconsistent letter thickness
       (function() {
         // Check if device is mobile
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -301,55 +308,77 @@
           // Add mobile-specific font rendering class
           document.documentElement.classList.add('mobile-font-rendering');
 
-          // Force repaint to fix potential font rendering issues
-          window.addEventListener('load', function() {
-            // Small timeout to ensure fonts are loaded
-            setTimeout(function() {
-              // Force repaint by toggling a class
-              document.body.classList.add('fonts-loaded');
+          // Create a font observer to ensure fonts are loaded before applying fixes
+          const fontLoadedCheck = () => {
+            // Check if fonts are loaded
+            document.fonts.ready.then(function() {
+              console.log("All fonts are loaded");
 
-              // Apply fixes for inconsistent letter thickness
-              // Exclude mobile menu elements from these fixes
-              const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, a, div, li');
-              textElements.forEach(function(el) {
-                // Skip elements that are part of the mobile menu
-                if (el.closest('[class*="translate-x"]') ||
-                    el.classList.contains('mobile-menu') ||
-                    el.closest('.mobile-menu') ||
-                    (el.parentElement && el.parentElement.classList.contains('md:hidden'))) {
-                  return;
+              // Add a small delay to ensure fonts are fully rendered
+              setTimeout(function() {
+                // Force repaint by toggling a class
+                document.body.classList.add('fonts-loaded');
+
+                // Apply fixes for inconsistent letter thickness using a more targeted approach
+                const mainContent = document.querySelector('main');
+                if (mainContent) {
+                  // Only target text elements in the main content area, not in the header/mobile menu
+                  const textElements = mainContent.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, a, div, li');
+
+                  textElements.forEach(function(el) {
+                    // Skip elements that are part of the mobile menu or have transform properties
+                    if (el.closest('[class*="translate-x"]') ||
+                        el.classList.contains('mobile-menu') ||
+                        el.closest('.mobile-menu') ||
+                        el.closest('[class*="md:hidden"]') ||
+                        getComputedStyle(el).transform !== 'none') {
+                      return;
+                    }
+
+                    // Apply more targeted fixes for inconsistent letter thickness
+                    el.style.fontKerning = 'normal';
+                    el.style.fontVariantLigatures = 'none';
+                    el.style.fontFeatureSettings = '"kern" 1, "liga" 0';
+
+                    // Use a more subtle approach to force GPU rendering
+                    // This helps with letter thickness without breaking layouts
+                    el.style.backfaceVisibility = 'hidden';
+
+                    // Apply a very slight letter spacing adjustment
+                    // This can help with inconsistent letter thickness
+                    el.style.letterSpacing = '0.01px';
+                  });
+
+                  // Apply a subtle text shadow to improve text rendering
+                  // This can help with inconsistent letter thickness on some devices
+                  const paragraphs = mainContent.querySelectorAll('p');
+                  paragraphs.forEach(function(p) {
+                    if (!p.closest('.mobile-menu') && !p.closest('[class*="md:hidden"]')) {
+                      p.style.textShadow = '0 0 1px transparent';
+                    }
+                  });
                 }
 
-                // Force consistent font rendering
-                el.style.fontKerning = 'normal';
-                // Disable ligatures which can cause inconsistent thickness
-                el.style.fontVariantLigatures = 'none';
-                // Ensure consistent font features
-                el.style.fontFeatureSettings = '"kern" 1, "liga" 0';
-                // Force GPU rendering for consistent letter rendering
-                el.style.transform = 'translateZ(0)';
-                // Ensure consistent letter spacing
-                el.style.letterSpacing = '0';
-              });
-
-              // Use a more targeted approach to force redraw without affecting the mobile menu
-              // This avoids interfering with the mobile menu's transform properties
-              const contentElements = document.querySelectorAll('main > section, footer');
-              contentElements.forEach(function(el) {
-                // Skip if this is a mobile menu or contains mobile menu elements
-                if (el.classList.contains('mobile-menu') || el.querySelector('.mobile-menu')) {
-                  return;
+                // Force a gentle repaint of the main content only
+                if (mainContent) {
+                  // Use a technique that doesn't disrupt the layout
+                  const currentOpacity = getComputedStyle(mainContent).opacity;
+                  mainContent.style.opacity = '0.99';
+                  setTimeout(() => {
+                    mainContent.style.opacity = currentOpacity;
+                  }, 50);
                 }
 
-                // Force a redraw of this element only
-                const originalDisplay = el.style.display;
-                el.style.display = 'none';
-                // Trigger reflow
-                el.offsetHeight;
-                el.style.display = originalDisplay;
-              });
-            }, 300); // Longer timeout to ensure fonts are fully loaded
-          });
+              }, 100); // Shorter timeout since we're already waiting for fonts to load
+            });
+          };
+
+          // Run the font check when the page loads
+          if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', fontLoadedCheck);
+          } else {
+            fontLoadedCheck();
+          }
         }
       })();
     </script>
@@ -367,8 +396,6 @@
       }
 
       .fonts-loaded {
-        /* Force repaint */
-        transform: translateZ(0);
         /* Ensure consistent font rendering */
         font-kerning: normal;
         /* Disable ligatures which can cause inconsistent thickness */
@@ -378,28 +405,45 @@
       }
 
       /* Target specific elements that might have inconsistent letter thickness */
-      /* Exclude mobile menu elements from these fixes */
-      .fonts-loaded p:not([class*="mobile-menu"]),
-      .fonts-loaded h1:not([class*="mobile-menu"]),
-      .fonts-loaded h2:not([class*="mobile-menu"]),
-      .fonts-loaded h3:not([class*="mobile-menu"]),
-      .fonts-loaded h4:not([class*="mobile-menu"]),
-      .fonts-loaded h5:not([class*="mobile-menu"]),
-      .fonts-loaded h6:not([class*="mobile-menu"]),
-      .fonts-loaded span:not([class*="mobile-menu"]),
-      .fonts-loaded a:not([class*="mobile-menu"]),
-      .fonts-loaded div:not(.mobile-menu):not([class*="mobile-menu"]),
-      .fonts-loaded li:not([class*="mobile-menu"]) {
+      /* More targeted approach to avoid affecting mobile menu */
+      .fonts-loaded main p,
+      .fonts-loaded main h1,
+      .fonts-loaded main h2,
+      .fonts-loaded main h3,
+      .fonts-loaded main h4,
+      .fonts-loaded main h5,
+      .fonts-loaded main h6,
+      .fonts-loaded main span,
+      .fonts-loaded main a,
+      .fonts-loaded main div:not([class*="mobile"]),
+      .fonts-loaded main li {
         /* Force consistent font rendering */
-        font-kerning: normal !important;
+        font-kerning: normal;
         /* Disable ligatures which can cause inconsistent thickness */
-        font-variant-ligatures: none !important;
+        font-variant-ligatures: none;
         /* Ensure consistent font features */
-        font-feature-settings: "kern" 1, "liga" 0 !important;
-        /* Force GPU rendering for consistent letter rendering */
-        transform: translateZ(0);
-        /* Ensure consistent letter spacing */
-        letter-spacing: 0 !important;
+        font-feature-settings: "kern" 1, "liga" 0;
+        /* Use a more subtle approach for GPU rendering */
+        backface-visibility: hidden;
+        /* Apply a very slight letter spacing adjustment */
+        letter-spacing: 0.01px;
+      }
+
+      /* Apply a subtle text shadow to improve text rendering on paragraphs */
+      .fonts-loaded main p {
+        text-shadow: 0 0 1px transparent;
+      }
+
+      /* Ensure mobile menu is not affected */
+      .mobile-menu,
+      .mobile-menu * {
+        transform: none !important;
+        backface-visibility: visible !important;
+        font-kerning: auto !important;
+        font-variant-ligatures: normal !important;
+        font-feature-settings: normal !important;
+        letter-spacing: normal !important;
+        text-shadow: none !important;
       }
     </style>
   </body>

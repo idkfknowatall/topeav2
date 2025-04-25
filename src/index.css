@@ -15,8 +15,6 @@ body {
   text-rendering: optimizeLegibility;
   /* Prevent synthetic font variants */
   font-synthesis: none;
-  /* Ensure consistent letter spacing */
-  letter-spacing: 0;
 }
 
 /* Specific optimizations for mobile devices */
@@ -30,26 +28,41 @@ body {
     font-feature-settings: "kern" 1, "liga" 0;
   }
 
-  /* Fix for inconsistent letter thickness */
-  /* Exclude mobile menu elements from these fixes */
-  p:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  h1:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  h2:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  h3:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  h4:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  h5:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  h6:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  span:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  a:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  button:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  input:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  textarea:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  select:not([class*="mobile-menu"]):not([class*="md:hidden"]),
-  li:not([class*="mobile-menu"]):not([class*="md:hidden"]) {
-    /* Force GPU rendering to prevent inconsistent thickness */
-    transform: translateZ(0);
+  /* Fix for inconsistent letter thickness - target main content only */
+  main p,
+  main h1,
+  main h2,
+  main h3,
+  main h4,
+  main h5,
+  main h6,
+  main span,
+  main a,
+  main div:not([class*="mobile"]),
+  main li {
+    /* Use a more subtle approach for GPU rendering */
+    backface-visibility: hidden;
     /* Ensure consistent font rendering */
     font-kerning: normal;
+    /* Apply a very slight letter spacing adjustment */
+    letter-spacing: 0.01px;
+  }
+
+  /* Apply a subtle text shadow to improve text rendering on paragraphs */
+  main p {
+    text-shadow: 0 0 1px transparent;
+  }
+
+  /* Ensure mobile menu is not affected */
+  .mobile-menu,
+  .mobile-menu * {
+    transform: none !important;
+    backface-visibility: visible !important;
+    font-kerning: auto !important;
+    font-variant-ligatures: normal !important;
+    font-feature-settings: normal !important;
+    letter-spacing: normal !important;
+    text-shadow: none !important;
   }
 }
 
