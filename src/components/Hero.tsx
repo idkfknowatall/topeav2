@@ -103,7 +103,8 @@ const Hero: React.FC = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+      {/* Scroll arrow - improved mobile alignment */}
+      <div className="absolute bottom-10 w-full flex justify-center animate-bounce">
         <button
           onClick={scrollToPortfolio}
           className="flex items-center justify-center w-12 h-12 rounded-full border border-white/30 text-white/70 hover:text-white hover:border-secondary-400 hover:text-secondary-400 transition-all"
