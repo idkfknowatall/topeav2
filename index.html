@@ -23,70 +23,59 @@
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
 
-    <!-- Improved font loading strategy -->
-    <!-- Load full font files instead of subset to ensure consistent rendering -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Montserrat:wght@400;500;600;700&display=block">
-
-    <!-- Use display=block to prevent FOUT (Flash of Unstyled Text) -->
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Montserrat:wght@400;500;600;700&display=block" rel="stylesheet" media="print" onload="this.media='all'">
-
-    <!-- Fallback for no JavaScript -->
-    <noscript>
-      <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Montserrat:wght@400;500;600;700&display=block" rel="stylesheet">
-    </noscript>
-
-    <!-- Improved font loading optimization -->
+    <!-- Self-hosted fonts for consistent rendering -->
     <style>
-      /* Font definitions with better mobile rendering */
+      /* Self-hosted Montserrat font */
       @font-face {
         font-family: 'Montserrat';
         font-style: normal;
         font-weight: 400;
-        font-display: block; /* Changed from swap to block to prevent FOUT */
-        src: local('Montserrat Regular'), local('Montserrat-Regular');
-        text-rendering: optimizeLegibility;
+        font-display: fallback; /* Use fallback to ensure text is visible while font loads */
+        src: url('https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXp-p7K4KLg.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        font-weight-adjustment: normal;
+        size-adjust: 100%;
       }
-      @font-face {
-        font-family: 'Montserrat';
-        font-style: normal;
-        font-weight: 500;
-        font-display: block;
-        src: local('Montserrat Medium'), local('Montserrat-Medium');
-        text-rendering: optimizeLegibility;
-      }
-      @font-face {
-        font-family: 'Montserrat';
-        font-style: normal;
-        font-weight: 600;
-        font-display: block;
-        src: local('Montserrat SemiBold'), local('Montserrat-SemiBold');
-        text-rendering: optimizeLegibility;
-      }
+
       @font-face {
         font-family: 'Montserrat';
         font-style: normal;
         font-weight: 700;
-        font-display: block;
-        src: local('Montserrat Bold'), local('Montserrat-Bold');
-        text-rendering: optimizeLegibility;
+        font-display: fallback;
+        src: url('https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCuM73w5aXp-p7K4KLg.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        font-weight-adjustment: normal;
+        size-adjust: 100%;
       }
+
+      /* Self-hosted Fraunces font */
       @font-face {
         font-family: 'Fraunces';
         font-style: normal;
         font-weight: 400;
-        font-display: block;
-        src: local('Fraunces Regular'), local('Fraunces-Regular');
-        text-rendering: optimizeLegibility;
+        font-display: fallback;
+        src: url('https://fonts.gstatic.com/s/fraunces/v31/6NUu8FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0K7iN7hzFUPJH58nib14c7qv8oRcTn.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        font-weight-adjustment: normal;
+        size-adjust: 100%;
       }
+
       @font-face {
         font-family: 'Fraunces';
         font-style: normal;
         font-weight: 700;
-        font-display: block;
-        src: local('Fraunces Bold'), local('Fraunces-Bold');
-        text-rendering: optimizeLegibility;
+        font-display: fallback;
+        src: url('https://fonts.gstatic.com/s/fraunces/v31/6NUu8FyLNQOQZAnv9bYEvDiIdE9Ea92uemAk_WBq8U_9v0c2Wa0K7iN7hzFUPJH58nib14c7qv8oRcTn.woff2') format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        font-weight-adjustment: normal;
+        size-adjust: 100%;
       }
     </style>
+
+    <!-- Fallback for browsers that don't support woff2 -->
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    </noscript>
 
     <!-- Preload critical images with dimensions to prevent layout shifts -->
     <link rel="preload" href="/images/hero-bg-1024.webp" as="image" type="image/webp" media="(max-width: 1024px)" fetchpriority="high">
@@ -100,17 +89,26 @@
       @media (max-width: 767px) {
         html, body {
           -webkit-text-size-adjust: 100%;
-          -webkit-font-smoothing: subpixel-antialiased;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
           font-synthesis: none;
           text-rendering: optimizeLegibility;
         }
 
-        /* Fix for bold text appearing with weird contrast on mobile */
-        strong, b, h1, h2, h3, h4, h5, h6,
-        .font-bold, .font-semibold, .font-medium {
-          letter-spacing: -0.01em; /* Slightly tighten letter spacing for bold text */
-          font-weight: 700 !important; /* Ensure consistent font weight */
-          text-shadow: 0 0 0 currentColor; /* Prevent text shadow artifacts */
+        /* Fix for inconsistent letter thickness on mobile */
+        p, h1, h2, h3, h4, h5, h6, span, a, div, li {
+          /* Force consistent font rendering */
+          font-kerning: normal;
+          /* Disable ligatures which can cause inconsistent thickness */
+          font-variant-ligatures: none;
+          /* Ensure consistent font features */
+          font-feature-settings: "kern" 1, "liga" 0;
+          /* Prevent browser from synthesizing font styles */
+          font-synthesis: none;
+          /* Force GPU rendering for consistent letter rendering */
+          transform: translateZ(0);
+          /* Ensure consistent letter spacing */
+          letter-spacing: 0;
         }
       }
 
@@ -294,7 +292,7 @@
         }
       });
 
-      // Font optimization for mobile devices
+      // Font optimization for mobile devices - fix for inconsistent letter thickness
       (function() {
         // Check if device is mobile
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -310,32 +308,79 @@
               // Force repaint by toggling a class
               document.body.classList.add('fonts-loaded');
 
-              // Apply specific fixes for bold text on mobile
-              const boldElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, strong, b, .font-bold, .font-semibold, .font-medium');
-              boldElements.forEach(function(el) {
-                // Ensure proper font weight
-                el.style.fontWeight = '700';
-                // Slight letter spacing adjustment
-                el.style.letterSpacing = '-0.01em';
-                // Prevent text shadow artifacts
-                el.style.textShadow = '0 0 0 currentColor';
+              // Apply fixes for inconsistent letter thickness
+              const textElements = document.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, a, div, li');
+              textElements.forEach(function(el) {
+                // Force consistent font rendering
+                el.style.fontKerning = 'normal';
+                // Disable ligatures which can cause inconsistent thickness
+                el.style.fontVariantLigatures = 'none';
+                // Ensure consistent font features
+                el.style.fontFeatureSettings = '"kern" 1, "liga" 0';
+                // Force GPU rendering for consistent letter rendering
+                el.style.transform = 'translateZ(0)';
+                // Ensure consistent letter spacing
+                el.style.letterSpacing = '0';
               });
-            }, 100);
+
+              // Force a redraw of the entire page
+              const scrollTop = document.documentElement.scrollTop;
+              document.documentElement.style.display = 'none';
+              // Trigger reflow
+              document.documentElement.offsetHeight;
+              document.documentElement.style.display = '';
+              document.documentElement.scrollTop = scrollTop;
+            }, 300); // Longer timeout to ensure fonts are fully loaded
           });
         }
       })();
     </script>
 
-    <!-- Add mobile-specific styles -->
+    <!-- Add mobile-specific styles for consistent font rendering -->
     <style>
       .mobile-font-rendering {
-        -webkit-font-smoothing: subpixel-antialiased;
-        -moz-osx-font-smoothing: auto;
+        /* Use consistent font smoothing */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        /* Prevent synthetic font variants */
+        font-synthesis: none;
+        /* Optimize text rendering */
+        text-rendering: optimizeLegibility;
       }
 
       .fonts-loaded {
         /* Force repaint */
         transform: translateZ(0);
+        /* Ensure consistent font rendering */
+        font-kerning: normal;
+        /* Disable ligatures which can cause inconsistent thickness */
+        font-variant-ligatures: none;
+        /* Ensure consistent font features */
+        font-feature-settings: "kern" 1, "liga" 0;
+      }
+
+      /* Target specific elements that might have inconsistent letter thickness */
+      .fonts-loaded p,
+      .fonts-loaded h1,
+      .fonts-loaded h2,
+      .fonts-loaded h3,
+      .fonts-loaded h4,
+      .fonts-loaded h5,
+      .fonts-loaded h6,
+      .fonts-loaded span,
+      .fonts-loaded a,
+      .fonts-loaded div,
+      .fonts-loaded li {
+        /* Force consistent font rendering */
+        font-kerning: normal !important;
+        /* Disable ligatures which can cause inconsistent thickness */
+        font-variant-ligatures: none !important;
+        /* Ensure consistent font features */
+        font-feature-settings: "kern" 1, "liga" 0 !important;
+        /* Force GPU rendering for consistent letter rendering */
+        transform: translateZ(0);
+        /* Ensure consistent letter spacing */
+        letter-spacing: 0 !important;
       }
     </style>
   </body>

@@ -8,20 +8,34 @@ html {
 
 body {
   @apply font-sans;
+  /* Use consistent font smoothing across all devices */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Optimize text rendering */
   text-rendering: optimizeLegibility;
+  /* Prevent synthetic font variants */
+  font-synthesis: none;
+  /* Ensure consistent letter spacing */
+  letter-spacing: 0;
 }
 
 /* Specific optimizations for mobile devices */
 @media screen and (max-width: 767px) {
   body {
-    /* Adjust font smoothing for mobile */
-    -webkit-font-smoothing: subpixel-antialiased;
     /* Prevent font scaling in landscape */
     -webkit-text-size-adjust: 100%;
-    /* Improve font rendering on mobile */
-    font-synthesis: none;
+    /* Force consistent font weight */
+    font-variant-ligatures: none;
+    /* Ensure consistent font rendering */
+    font-feature-settings: "kern" 1, "liga" 0;
+  }
+
+  /* Fix for inconsistent letter thickness */
+  p, h1, h2, h3, h4, h5, h6, span, a, button, input, textarea, select, li {
+    /* Force GPU rendering to prevent inconsistent thickness */
+    transform: translateZ(0);
+    /* Ensure consistent font rendering */
+    font-kerning: normal;
   }
 }
 
