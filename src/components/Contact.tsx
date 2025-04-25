@@ -81,10 +81,8 @@ const Contact: React.FC = () => {
       setIsSubmitting(true);
 
       try {
-        // Use the appropriate API endpoint based on the domain
-        // This avoids CORS issues between www and non-www domains
-        const isWwwDomain = window.location.hostname.startsWith('www.');
-        const apiEndpoint = isWwwDomain ? '/api/www-contact' : '/api/contact';
+        // Always use the non-www API endpoint since we're redirecting www to non-www
+        const apiEndpoint = '/api/contact';
 
         console.log(`Submitting form to: ${apiEndpoint}`);
 
