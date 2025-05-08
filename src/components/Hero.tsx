@@ -44,6 +44,8 @@ const Hero: React.FC = () => {
       id="home"
       ref={heroRef}
       className="relative h-screen flex items-center justify-center bg-gradient-to-r from-primary-900 to-primary-800 text-white overflow-hidden"
+      role="region"
+      aria-label="Hero section"
     >
       <picture>
         <source
@@ -61,7 +63,7 @@ const Hero: React.FC = () => {
           decoding="async"
           width="2048"
           height="1365"
-          style={{contentVisibility: 'auto'}}
+          style={{ contentVisibility: 'auto' }}
         />
       </picture>
 
@@ -71,7 +73,9 @@ const Hero: React.FC = () => {
         <div className="max-w-3xl mx-auto md:mx-0">
           <h2 className="text-secondary-400 font-medium text-lg md:text-xl mb-3 tracking-wide">Web Developer & Designer</h2>
           <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
-            Transforming <span className="text-secondary-400">Ideas</span><br />Into Digital Reality
+            Transforming <span className="text-secondary-400">Ideas</span>
+            <br />
+            Into Digital Reality
           </h1>
           <p
             className="text-slate-200 text-lg md:text-xl max-w-xl mb-10 leading-relaxed"
@@ -80,7 +84,7 @@ const Hero: React.FC = () => {
             style={{
               contentVisibility: 'auto',
               containIntrinsicSize: '0 100px',
-              display: 'block'
+              display: 'block',
             }}
           >
             We create exceptional digital experiences that elevate brands and drive business growth through innovative design and development.
@@ -90,12 +94,14 @@ const Hero: React.FC = () => {
             <button
               onClick={scrollToPortfolio}
               className="px-8 py-4 bg-secondary-500 hover:bg-secondary-600 text-slate-900 font-medium rounded-lg transition-all transform hover:scale-105 hover:shadow-elevated focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-opacity-50"
+              aria-label="View our work"
             >
               View Our Work
             </button>
             <button
               onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
               className="px-8 py-4 border-2 border-white hover:border-secondary-400 hover:text-secondary-400 font-medium rounded-lg transition-all hover:shadow-soft"
+              aria-label="Let's talk"
             >
               Let's Talk
             </button>

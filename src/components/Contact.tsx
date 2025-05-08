@@ -133,7 +133,7 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <section id="contact" className="py-20 md:py-28 bg-gradient-to-b from-primary-900 to-primary-950 text-white">
+    <section id="contact" className="py-20 md:py-28 bg-gradient-to-b from-primary-900 to-primary-950 text-white" role="region" aria-label="Contact section">
       <div className="container mx-auto px-4 md:px-6">
         <div className={`text-center mb-16 md:mb-20 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h3 className="text-secondary-400 font-medium tracking-wide mb-3">Get In Touch</h3>
@@ -193,20 +193,23 @@ const Contact: React.FC = () => {
                 <h3 className="font-serif text-2xl font-bold mb-6 text-primary-800">Send a Message</h3>
 
                 {isSubmitted ? (
-                  <div className="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-lg relative mb-6 shadow-soft">
+                  <div className="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-lg relative mb-6 shadow-soft" role="alert">
                     <strong className="font-bold">Thank you for contacting us!</strong>
                     <span className="block sm:inline"> Your message has been received. Our design team will review your requirements and respond promptly.</span>
                   </div>
                 ) : null}
 
                 {submitError ? (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg relative mb-6 shadow-soft">
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg relative mb-6 shadow-soft" role="alert">
                     <strong className="font-bold">Error:</strong>
                     <span className="block sm:inline"> {submitError}</span>
                   </div>
                 ) : null}
 
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} aria-describedby="form-instructions">
+                  <p id="form-instructions" className="sr-only">
+                    All fields marked with an asterisk are required.
+                  </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
@@ -222,8 +225,15 @@ const Contact: React.FC = () => {
                           errors.name ? 'border-red-400 bg-red-50' : 'border-slate-200 focus:bg-white bg-slate-50'
                         }`}
                         placeholder="Your name"
+                        aria-required="true"
+                        aria-invalid={errors.name ? 'true' : 'false'}
+                        aria-describedby={errors.name ? 'name-error' : undefined}
                       />
-                      {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+                      {errors.name && (
+                        <p id="name-error" className="mt-1 text-sm text-red-500" role="alert">
+                          {errors.name}
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -240,8 +250,15 @@ const Contact: React.FC = () => {
                           errors.email ? 'border-red-400 bg-red-50' : 'border-slate-200 focus:bg-white bg-slate-50'
                         }`}
                         placeholder="your.email@example.com"
+                        aria-required="true"
+                        aria-invalid={errors.email ? 'true' : 'false'}
+                        aria-describedby={errors.email ? 'email-error' : undefined}
                       />
-                      {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email}</p>}
+                      {errors.email && (
+                        <p id="email-error" className="mt-1 text-sm text-red-500" role="alert">
+                          {errors.email}
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -256,6 +273,7 @@ const Contact: React.FC = () => {
                         value={formData.projectType}
                         onChange={handleChange}
                         className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors bg-slate-50 focus:bg-white"
+                        aria-describedby="projectType-help"
                       >
                         <option value="">Select project type</option>
                         <option value="frontend">Frontend Website Design</option>
@@ -265,12 +283,24 @@ const Contact: React.FC = () => {
                         <option value="performance">Performance Improvement</option>
                         <option value="other">Other</option>
                       </select>
+                      <p id="projectType-help" className="sr-only">
+                        Select the type of project you are interested in.
+                      </p>
                     </div>
 
                     <div>
                       <div
                         className="relative overflow-hidden rounded-lg bg-gradient-to-r from-primary-600 to-primary-800 p-6 text-white shadow-elevated group"
-                        onClick={() => setFormData(prev => ({ ...prev, budget: 'flexible' }))}
+                        onClick={() => setFormData((prev) => ({ ...prev, budget: 'flexible' }))}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            setFormData((prev) => ({ ...prev, budget: 'flexible' }));
+                          }
+                        }}
+                        aria-pressed={formData.budget === 'flexible'}
+                        aria-label="Select flexible budget option"
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-secondary-400 to-secondary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <div className="absolute -inset-1 bg-gradient-to-r from-secondary-400 to-primary-600 opacity-30 blur-xl group-hover:opacity-70 transition-opacity duration-500 group-hover:duration-200 animate-pulse-slow"></div>
@@ -303,8 +333,15 @@ const Contact: React.FC = () => {
                         errors.message ? 'border-red-400 bg-red-50' : 'border-slate-200 focus:bg-white bg-slate-50'
                       }`}
                       placeholder="Tell us about your website design needs, SEO requirements, and project goals..."
+                      aria-required="true"
+                      aria-invalid={errors.message ? 'true' : 'false'}
+                      aria-describedby={errors.message ? 'message-error' : undefined}
                     ></textarea>
-                    {errors.message && <p className="mt-1 text-sm text-red-500">{errors.message}</p>}
+                    {errors.message && (
+                      <p id="message-error" className="mt-1 text-sm text-red-500" role="alert">
+                        {errors.message}
+                      </p>
+                    )}
                   </div>
 
                   {/* Honeypot field - hidden from users but bots will fill it out */}
