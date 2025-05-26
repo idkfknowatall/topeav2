@@ -1,18 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { FaBars, FaTimes, FaCode, FaPencilRuler } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaBars, FaTimes, FaCode, FaPencilRuler } from './icons';
+import { useHeaderScroll } from '../hooks/useThrottledScroll';
 
 const Header: React.FC = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const { isScrolled } = useHeaderScroll(10);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
@@ -30,7 +22,7 @@ const Header: React.FC = () => {
       role="banner"
       aria-label="Primary"
     >
-      <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
+      <div className="container mx-auto px-6 md:px-8 flex justify-between items-center">
         <div className="flex items-center">
           <div
             className={`flex items-center justify-center w-8 h-8 rounded-md mr-2 transition-all duration-300 ${
@@ -45,7 +37,7 @@ const Header: React.FC = () => {
             />
           </div>
           <h1
-            className={`font-serif font-bold text-2xl transition-colors duration-300 ${
+            className={`font-display font-bold text-2xl transition-colors duration-300 tracking-tight ${
               isScrolled ? 'text-slate-800' : 'text-white'
             }`}
           >
@@ -55,12 +47,12 @@ const Header: React.FC = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:block" role="navigation" aria-label="Primary navigation">
-          <ul className="flex space-x-8">
+          <ul className="flex space-x-10">
             {['home', 'portfolio', 'services', 'contact'].map((item) => (
               <li key={item}>
                 <button
                   onClick={() => scrollToSection(item)}
-                  className={`capitalize font-medium text-sm tracking-wide transition-colors hover:text-primary-500 ${
+                  className={`capitalize font-medium text-sm tracking-wider transition-all duration-300 hover:text-primary-500 hover:scale-105 ${
                     isScrolled ? 'text-slate-700' : 'text-white'
                   }`}
                   aria-label={`Scroll to ${item} section`}

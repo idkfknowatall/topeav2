@@ -20,11 +20,12 @@
     <!-- Optimized Google Fonts loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Fraunces:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <!-- Preload critical images with dimensions to prevent layout shifts -->
+    <!-- Preload critical images based on common viewport sizes -->
     <link rel="preload" href="/images/hero-bg-1024.webp" as="image" type="image/webp" media="(max-width: 1024px)" fetchpriority="high">
-    <link rel="preload" href="/images/hero-bg-2048.webp" as="image" type="image/webp" media="(min-width: 1025px)" fetchpriority="high">
+    <link rel="preload" href="/images/hero-bg-1536.webp" as="image" type="image/webp" media="(min-width: 1025px) and (max-width: 1536px)" fetchpriority="high">
+    <link rel="preload" href="/images/hero-bg-2048.webp" as="image" type="image/webp" media="(min-width: 1537px)" fetchpriority="high">
 
     <!-- Critical JavaScript will be preloaded by Vite during build -->
 

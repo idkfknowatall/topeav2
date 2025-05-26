@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEnvelope, FaArrowUp, FaInstagram } from 'react-icons/fa';
+import { FaEnvelope, FaArrowUp, FaInstagram } from './icons';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();

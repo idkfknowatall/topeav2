@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import compression from 'compression';
 import helmet from 'helmet';
 import sanitizeHtml from 'sanitize-html';
+import { securityMonitor } from './security-monitor.js';
 
 // Load environment variables
 dotenv.config();
@@ -29,8 +30,8 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://fonts.googleapis.com"], // Removed 'unsafe-inline'
-      styleSrc: ["'self'", "https://fonts.googleapis.com"],  // Removed 'unsafe-inline'
+      scriptSrc: ["'self'", "https://fonts.googleapis.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // Allow inline styles for Tailwind
       imgSrc: ["'self'", "data:", "https:"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       connectSrc: ["'self'", "https://topea.me", "https://www.topea.me"],
@@ -66,10 +67,27 @@ app.use(cors({
   maxAge: 86400 // 24 hours
 }));
 
-// Rate limiting
+// Rate limiting with memory cleanup
 const requestCounts = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour in milliseconds
 const MAX_REQUESTS_PER_IP = 5;
+const CLEANUP_INTERVAL_MS = 10 * 60 * 1000; // Clean up every 10 minutes
+
+// Cleanup expired entries to prevent memory leaks
+const cleanupExpiredEntries = (): void => {
+  const now = Date.now();
+  for (const [ip, record] of requestCounts.entries()) {
+    if (now > record.resetTime) {
+      requestCounts.delete(ip);
+    }
+  }
+};
+
+// Set up periodic cleanup - store reference for cleanup
+let cleanupIntervalId: NodeJS.Timeout | null = setInterval(cleanupExpiredEntries, CLEANUP_INTERVAL_MS);
+
+// Security monitoring middleware
+app.use(securityMonitor.createSecurityMiddleware());
 
 const rateLimiter = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
   const ip = req.ip || req.socket.remoteAddress || 'unknown';
@@ -85,7 +103,7 @@ const rateLimiter = (req: express.Request, res: express.Response, next: express.
 
   const record = requestCounts.get(ip);
 
-  if (record) { // Ensure record exists before accessing its properties
+  if (record) {
     // Reset count if the window has passed
     if (Date.now() > record.resetTime) {
       record.count = 1;
@@ -268,6 +286,19 @@ if (process.env.NODE_ENV === 'production') {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
+  // Security monitoring endpoint (protected)
+  app.get('/api/security-report', (req: express.Request, res: express.Response) => {
+    // Simple authentication check (in production, use proper authentication)
+    const authHeader = req.headers.authorization;
+    if (!authHeader || authHeader !== `Bearer ${process.env.ADMIN_TOKEN}`) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const report = securityMonitor.getSecurityReport();
+    res.status(200).json(report);
+  });
+
   // Handle all other routes
   app.get('*', (_req: express.Request, res: express.Response) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
@@ -275,8 +306,56 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Start server
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+// Graceful shutdown handlers for memory leak prevention
+const gracefulShutdown = (signal: string) => {
+  console.log(`\nReceived ${signal}. Starting graceful shutdown...`);
+
+  // Close server
+  server.close(() => {
+    console.log('HTTP server closed.');
+
+    // Clean up intervals
+    if (cleanupIntervalId) {
+      clearInterval(cleanupIntervalId);
+      console.log('Rate limiting cleanup interval cleared.');
+    }
+
+    // Clean up security monitor
+    securityMonitor.cleanup();
+
+    // Clear request counts map
+    requestCounts.clear();
+    console.log('Request counts map cleared.');
+
+    console.log('Graceful shutdown completed.');
+    process.exit(0);
+  });
+
+  // Force close after 10 seconds
+  setTimeout(() => {
+    console.error('Could not close connections in time, forcefully shutting down');
+    process.exit(1);
+  }, 10000);
+};
+
+// Listen for shutdown signals
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  gracefulShutdown('uncaughtException');
+});
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  gracefulShutdown('unhandledRejection');
 });
 
 export default app;

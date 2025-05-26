@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { FaChevronDown } from 'react-icons/fa';
+import { FaChevronDown } from './icons';
 
 const Hero: React.FC = () => {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -43,7 +43,7 @@ const Hero: React.FC = () => {
     <section
       id="home"
       ref={heroRef}
-      className="relative h-screen flex items-center justify-center bg-gradient-to-r from-primary-900 to-primary-800 text-white overflow-hidden"
+      className="relative h-screen flex items-center justify-center bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 text-white overflow-hidden"
       role="region"
       aria-label="Hero section"
     >
@@ -67,18 +67,21 @@ const Hero: React.FC = () => {
         />
       </picture>
 
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-primary-900/50 to-primary-900/80"></div>
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-primary-900/60 to-primary-950/90"></div>
 
-      <div className="container mx-auto px-4 md:px-6 z-10 text-center md:text-left">
-        <div className="max-w-3xl mx-auto md:mx-0">
-          <h2 className="text-secondary-400 font-medium text-lg md:text-xl mb-3 tracking-wide">Web Developer & Designer</h2>
-          <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight">
-            Transforming <span className="text-secondary-400">Ideas</span>
+      <div className="container mx-auto px-6 md:px-8 z-10 text-center md:text-left">
+        <div className="max-w-5xl mx-auto md:mx-0">
+          <h2 className="text-secondary-400 font-medium text-sm md:text-base mb-4 tracking-widest uppercase font-sans">Web Developer & Designer</h2>
+          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight tracking-tight">
+            Transforming <span className="text-secondary-400 relative">
+              Ideas
+              <span className="absolute -bottom-1 left-0 w-full h-1 bg-secondary-400/30 rounded-full"></span>
+            </span>
             <br />
-            Into Digital Reality
+            Into Digital <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary-400 to-secondary-300">Reality</span>
           </h1>
           <p
-            className="text-slate-200 text-lg md:text-xl max-w-xl mb-10 leading-relaxed"
+            className="text-slate-200 text-xl md:text-2xl max-w-2xl mb-12 leading-relaxed font-light"
             data-lcp="true"
             id="hero-description"
             style={{
@@ -90,33 +93,47 @@ const Hero: React.FC = () => {
             We create exceptional digital experiences that elevate brands and drive business growth through innovative design and development.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-5 justify-center md:justify-start">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center md:justify-start">
             <button
               onClick={scrollToPortfolio}
-              className="px-8 py-4 bg-secondary-500 hover:bg-secondary-600 text-slate-900 font-medium rounded-lg transition-all transform hover:scale-105 hover:shadow-elevated focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-opacity-50"
+              className="group px-10 py-5 bg-gradient-to-r from-secondary-500 to-secondary-400 hover:from-secondary-600 hover:to-secondary-500 text-slate-900 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-secondary-500/25 focus:outline-none focus:ring-4 focus:ring-secondary-500/50 focus:scale-105 relative overflow-hidden"
               aria-label="View our work"
             >
-              View Our Work
+              <span className="relative z-10 flex items-center gap-2">
+                View Our Work
+                <svg className="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-secondary-400 to-secondary-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </button>
             <button
               onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-8 py-4 border-2 border-white hover:border-secondary-400 hover:text-secondary-400 font-medium rounded-lg transition-all hover:shadow-soft"
+              className="group px-10 py-5 border-2 border-white/80 hover:border-secondary-400 hover:bg-secondary-400/10 text-white hover:text-secondary-400 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl backdrop-blur-sm focus:outline-none focus:ring-4 focus:ring-white/30 focus:scale-105"
               aria-label="Let's talk"
             >
-              Let's Talk
+              <span className="flex items-center gap-2">
+                Let's Talk
+                <svg className="w-5 h-5 transition-transform duration-300 group-hover:rotate-45" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Scroll arrow - improved mobile alignment */}
-      <div className="absolute bottom-10 w-full flex justify-center animate-bounce">
+      {/* Scroll arrow - enhanced design */}
+      <div className="absolute bottom-12 w-full flex justify-center">
         <button
           onClick={scrollToPortfolio}
-          className="flex items-center justify-center w-12 h-12 rounded-full border border-white/30 text-white/70 hover:text-white hover:border-secondary-400 hover:text-secondary-400 transition-all"
+          className="group flex items-center justify-center w-16 h-16 rounded-full border-2 border-white/20 bg-white/5 backdrop-blur-sm text-white/60 hover:text-secondary-400 hover:border-secondary-400/60 hover:bg-secondary-400/10 transition-all duration-300 transform hover:scale-110 animate-bounce hover:animate-none focus:outline-none focus:ring-4 focus:ring-white/20"
           aria-label="Scroll down"
         >
-          <FaChevronDown size={20} />
+          <FaChevronDown
+            size={24}
+            className="transition-transform duration-300 group-hover:translate-y-1"
+          />
         </button>
       </div>
     </section>

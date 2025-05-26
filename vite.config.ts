@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
-          'icons': ['react-icons'],
+          // Remove icons chunk since we're now using specific imports
         }
       }
     },
@@ -34,7 +34,8 @@ export default defineConfig(({ mode }) => {
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
-    include: ['react', 'react-dom', 'react-icons'],
+    include: ['react', 'react-dom'],
+    // Remove react-icons from include since we're using specific imports
   },
   // Ensure TypeScript files are properly compiled
   esbuild: {

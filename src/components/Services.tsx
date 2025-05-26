@@ -1,27 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import ServiceCard from './ServiceCard';
 import { Service } from '../types';
-import { FaPalette, FaCode, FaLayerGroup, FaGlobe, FaBolt } from 'react-icons/fa';
+import { FaPalette, FaCode, FaLayerGroup, FaGlobe, FaBolt } from './icons';
+import { useScrollAnimation } from '../hooks/useIntersectionObserver';
 
 const Services: React.FC = () => {
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    const section = document.getElementById('services');
-    if (section) observer.observe(section);
-
-    return () => observer.disconnect();
-  }, []);
+  const { isVisible, elementRef } = useScrollAnimation(0.1);
 
   const services: Service[] = [
     {
@@ -87,26 +71,33 @@ const Services: React.FC = () => {
   ];
 
   return (
-    <section id="services" className="py-20 md:py-28 bg-slate-50" role="region" aria-label="Services section">
-      <div className="container mx-auto px-4 md:px-6">
+    <section
+      id="services"
+      ref={elementRef}
+      className="py-24 md:py-32 bg-gradient-to-b from-slate-50 to-white relative"
+      role="region"
+      aria-label="Services section"
+    >
+      <div className="container mx-auto px-6 md:px-8 max-w-7xl">
         <div
-          className={`text-center mb-16 md:mb-20 transition-all duration-700 ${
+          className={`text-center mb-20 md:mb-24 transition-all duration-700 ${
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          <h3 className="text-secondary-500 font-medium tracking-wide mb-3">What We Offer</h3>
-          <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6">Our Services</h2>
-          <div className="w-24 h-1 bg-primary-600 mx-auto"></div>
-          <p className="mt-6 text-slate-600 max-w-2xl mx-auto text-lg">
+          <h3 className="text-secondary-500 font-semibold tracking-widest uppercase text-sm mb-4">What We Offer</h3>
+          <h2 className="font-display text-4xl md:text-6xl font-bold mb-6 tracking-tight">Our Services</h2>
+          <div className="w-32 h-1.5 bg-gradient-to-r from-secondary-500 to-primary-600 mx-auto rounded-full"></div>
+          <p className="mt-8 text-slate-600 max-w-3xl mx-auto text-xl leading-relaxed font-light">
             We specialize in creating beautiful, high-performance frontend websites with exceptional user experiences and strong SEO foundations to help your business stand out online.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+        {/* Improved grid layout with better alignment and consistent heights */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 md:gap-10 xl:gap-8 items-stretch">
           {services.map((service, index) => (
             <div
               key={service.id}
-              className={`transition-all duration-700 ${
+              className={`transition-all duration-700 flex ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
               }`}
               style={{ transitionDelay: `${200 + index * 100}ms` }}

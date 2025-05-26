@@ -107,7 +107,29 @@ html, body {
   @apply bg-slate-400;
 }
 
-/* Add animation for bounce effect */
+/* Enhanced typography and visual effects */
+.text-gradient {
+  background: linear-gradient(135deg, #f59e0b, #fcd34d);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-blue {
+  background: linear-gradient(135deg, #6366f1, #a5b4fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-teal {
+  background: linear-gradient(135deg, #14b8a6, #5eead4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Enhanced animations */
 @keyframes bounce {
   0%, 100% {
     transform: translateY(0);
@@ -117,6 +139,208 @@ html, body {
   }
 }
 
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(245, 158, 11, 0.5);
+  }
+}
+
+@keyframes glowBlue {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(99, 102, 241, 0.5);
+  }
+}
+
+@keyframes glowTeal {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(20, 184, 166, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(20, 184, 166, 0.5);
+  }
+}
+
 .animate-bounce {
   animation: bounce 2s infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.8s ease-out;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-glow-blue {
+  animation: glowBlue 2s ease-in-out infinite;
+}
+
+.animate-glow-teal {
+  animation: glowTeal 2s ease-in-out infinite;
+}
+
+/* Typography enhancements */
+.font-display {
+  font-feature-settings: "liga" 1, "kern" 1;
+  font-variant-ligatures: common-ligatures;
+}
+
+.tracking-tighter {
+  letter-spacing: -0.05em;
+}
+
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+
+.tracking-wider {
+  letter-spacing: 0.05em;
+}
+
+.tracking-widest {
+  letter-spacing: 0.1em;
+}
+
+/* Enhanced focus states for accessibility */
+.focus-enhanced:focus {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.1);
+}
+
+/* Improved contrast and accessibility */
+.text-high-contrast {
+  color: #0a0a0a;
+}
+
+.bg-high-contrast {
+  background-color: #fafafa;
+}
+
+.border-high-contrast {
+  border-color: #404040;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .dark-mode-text {
+    color: #fafafa;
+  }
+
+  .dark-mode-bg {
+    background-color: #0a0a0a;
+  }
+}
+
+/* Enhanced spacing and layout utilities */
+.section-padding {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+@media (min-width: 768px) {
+  .section-padding {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+}
+
+.container-padding {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .container-padding {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.content-spacing {
+  margin-bottom: 5rem;
+}
+
+@media (min-width: 768px) {
+  .content-spacing {
+    margin-bottom: 6rem;
+  }
+}
+
+/* Grid improvements */
+.grid-auto-fit {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.grid-auto-fill {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* Improved card spacing */
+.card-spacing {
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .card-spacing {
+    gap: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card-spacing {
+    gap: 3rem;
+  }
+}
+
+/* Portfolio card border radius fix */
+.portfolio-card {
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.portfolio-card * {
+  border-radius: inherit;
+}
+
+.portfolio-card img {
+  border-radius: 1rem 1rem 0 0;
+}
+
+/* Ensure rounded corners are maintained during transforms */
+.group:hover .portfolio-card-image {
+  border-radius: 1rem 1rem 0 0;
 }

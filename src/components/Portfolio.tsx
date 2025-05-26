@@ -1,24 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PortfolioCard from './PortfolioCard';
 import { Project } from '../types';
+import { useScrollAnimation } from '../hooks/useIntersectionObserver';
 
 const Portfolio: React.FC = () => {
   const [filter, setFilter] = useState<string>('all');
-  const [isVisible, setIsVisible] = useState<boolean>(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setIsVisible(true);
-        observer.disconnect();
-      }
-    }, { threshold: 0.1 });
-
-    const section = document.getElementById('portfolio');
-    if (section) observer.observe(section);
-
-    return () => observer.disconnect();
-  }, []);
+  const { isVisible, elementRef } = useScrollAnimation(0.1);
 
   const projects: Project[] = [
     {
@@ -84,27 +71,31 @@ const Portfolio: React.FC = () => {
   const categories = ['all', ...new Set(projects.map(project => project.category))];
 
   return (
-    <section id="portfolio" className="py-20 md:py-28 bg-white">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className={`text-center mb-16 md:mb-20 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h3 className="text-secondary-500 font-medium tracking-wide mb-3">Our Work</h3>
-          <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6">Featured Projects</h2>
-          <div className="w-24 h-1 bg-primary-600 mx-auto"></div>
-          <p className="mt-6 text-slate-600 max-w-2xl mx-auto text-lg">
-            Explore our portfolio of successful projects that have helped businesses achieve their digital goals.
+    <section
+      id="portfolio"
+      ref={elementRef}
+      className="py-24 md:py-32 bg-white relative"
+    >
+      <div className="container mx-auto px-6 md:px-8 max-w-7xl">
+        <div className={`text-center mb-20 md:mb-24 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h3 className="text-secondary-500 font-semibold tracking-widest uppercase text-sm mb-4">Our Work</h3>
+          <h2 className="font-display text-4xl md:text-6xl font-bold mb-6 tracking-tight">Featured Projects</h2>
+          <div className="w-32 h-1.5 bg-gradient-to-r from-primary-600 to-secondary-500 mx-auto rounded-full"></div>
+          <p className="mt-8 text-slate-600 max-w-3xl mx-auto text-xl leading-relaxed font-light">
+            Explore our portfolio of successful projects that have helped businesses achieve their digital goals through innovative design and development.
           </p>
         </div>
 
-        <div className={`flex justify-center mb-12 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <div className="inline-flex flex-wrap justify-center gap-3">
+        <div className={`flex justify-center mb-16 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="inline-flex flex-wrap justify-center gap-4">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setFilter(category)}
-                className={`px-6 py-3 rounded-full text-sm font-medium transition-all ${
+                className={`px-8 py-4 rounded-full text-sm font-semibold transition-all duration-300 transform hover:scale-105 relative overflow-hidden ${
                   filter === category
-                    ? 'bg-primary-600 text-white shadow-md'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200 hover:shadow-soft'
+                    ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-600/25 border-2 border-primary-500'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 hover:shadow-lg hover:shadow-slate-200/50 border-2 border-slate-200 hover:border-primary-300'
                 }`}
               >
                 {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -113,12 +104,16 @@ const Portfolio: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12">
           {filteredProjects.map((project, index) => (
             <div
               key={project.id}
-              className={`transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-              style={{ transitionDelay: `${200 + index * 100}ms` }}
+              className={`transition-all duration-700 rounded-2xl ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+              style={{
+                transitionDelay: `${200 + index * 100}ms`,
+                borderRadius: '1rem', // Ensure wrapper doesn't interfere with card corners
+                overflow: 'hidden' // Prevent any content from bleeding outside rounded corners
+              }}
             >
               <PortfolioCard project={project} />
             </div>

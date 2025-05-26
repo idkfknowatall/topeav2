@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { FaEnvelope, FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
+import { FaEnvelope, FaMapMarkerAlt, FaPaperPlane, FaRedo, FaExclamationTriangle } from './icons';
+import { useScrollAnimation } from '../hooks/useIntersectionObserver';
+import { useDebounce } from '../hooks/useDebounce';
+import { useFormSubmission } from '../hooks/useApiCall';
+import { logger } from '../services/logger';
 
+// Type definitions for form state and validation
 interface FormState {
   name: string;
   email: string;
@@ -17,6 +22,10 @@ interface FormErrors {
 }
 
 const Contact: React.FC = () => {
+  // Performance hooks
+  const { isVisible, elementRef } = useScrollAnimation(0.1);
+
+  // Form state management
   const [formData, setFormData] = useState<FormState>({
     name: '',
     email: '',
@@ -26,38 +35,115 @@ const Contact: React.FC = () => {
     honeypot: ''
   });
 
+  // UI state management
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isVisible, setIsVisible] = useState<boolean>(false);
+
+  // API call management with retry functionality
+  const {
+    loading: isSubmitting,
+    error: submitError,
+    data: submitResponse,
+    retryCount,
+    isRetrying,
+    submitForm,
+    retry: retrySubmission,
+    reset: resetSubmission,
+  } = useFormSubmission({
+    onSuccess: (data) => {
+      logger.logUserAction('Contact Form Submitted Successfully', {
+        formData: {
+          name: formData.name,
+          email: formData.email,
+          projectType: formData.projectType
+        },
+      });
+      // Reset form on success
+      setFormData({
+        name: '',
+        email: '',
+        projectType: '',
+        budget: '',
+        message: '',
+        honeypot: ''
+      });
+    },
+    onError: (error) => {
+      logger.error('Contact Form Submission Failed', {
+        error: {
+          name: error.name,
+          message: error.message,
+          status: error.status,
+        },
+        formData: {
+          name: formData.name,
+          email: formData.email,
+          projectType: formData.projectType
+        },
+        retryCount,
+      });
+    },
+    onRetry: (attempt, error) => {
+      logger.info('Contact Form Retry Attempt', {
+        attempt,
+        error: error.message,
+        formData: {
+          name: formData.name,
+          email: formData.email,
+          projectType: formData.projectType
+        },
+      });
+    },
+  });
+
+  // Check if form was successfully submitted
+  const isSubmitted = !!submitResponse;
+
+  // Debounced form values for validation
+  const debouncedName = useDebounce(formData.name, 500);
+  const debouncedEmail = useDebounce(formData.email, 500);
+  const debouncedMessage = useDebounce(formData.message, 800);
+
+  // Real-time validation with debounced values
+  useEffect(() => {
+    if (debouncedName && formData.name) {
+      setErrors(prev => ({ ...prev, name: undefined }));
+    }
+  }, [debouncedName, formData.name]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        setIsVisible(true);
-        observer.disconnect();
+    if (debouncedEmail && formData.email) {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+      if (emailRegex.test(debouncedEmail)) {
+        setErrors(prev => ({ ...prev, email: undefined }));
+      } else {
+        setErrors(prev => ({ ...prev, email: 'Invalid email address' }));
       }
-    }, { threshold: 0.1 });
+    }
+  }, [debouncedEmail, formData.email]);
 
-    const section = document.getElementById('contact');
-    if (section) observer.observe(section);
+  useEffect(() => {
+    if (debouncedMessage && formData.message) {
+      setErrors(prev => ({ ...prev, message: undefined }));
+    }
+  }, [debouncedMessage, formData.message]);
 
-    return () => observer.disconnect();
-  }, []);
-
+  // Form validation logic
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
+    // Name validation
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     }
 
+    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(formData.email)) {
       newErrors.email = 'Invalid email address';
     }
 
+    // Message validation
     if (!formData.message.trim()) {
       newErrors.message = 'Message is required';
     }
@@ -66,90 +152,98 @@ const Contact: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  // Handle form input changes
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
+  // Handle form submission with comprehensive error handling
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitError(null);
 
+    // Reset any previous submission state
+    resetSubmission();
+
+    // Validate form before submission
     if (validateForm()) {
-      setIsSubmitting(true);
+      logger.logUserAction('Contact Form Submission Started', {
+        formData: {
+          name: formData.name,
+          email: formData.email,
+          projectType: formData.projectType
+        },
+      });
 
-      try {
-        // Always use the non-www API endpoint since we're redirecting www to non-www
-        const apiEndpoint = '/api/contact';
-
-        console.log(`Submitting form to: ${apiEndpoint}`);
-
-        const response = await fetch(apiEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        });
-
-        // Log the response status and headers
-        console.log(`Response status: ${response.status}`);
-        console.log(`Response type: ${response.headers.get('content-type')}`);
-
-        // Check if the response is JSON
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          // If not JSON, get the text and log it
-          const text = await response.text();
-          console.error('Non-JSON response:', text);
-          throw new Error('Server returned non-JSON response. Please try again later.');
-        }
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Something went wrong. Please try again later.');
-        }
-
-        // Success
-        setIsSubmitting(false);
-        setIsSubmitted(true);
-        setFormData({
-          name: '',
-          email: '',
-          projectType: '',
-          budget: '',
-          message: '',
-          honeypot: ''
-        });
-      } catch (error) {
-        setIsSubmitting(false);
-        setSubmitError(error instanceof Error ? error.message : 'Failed to send message. Please try again.');
-        console.error('Error submitting form:', error);
-      }
+      // Submit form using the new API hook
+      await submitForm('/api/contact', formData);
+    } else {
+      logger.logUserAction('Contact Form Validation Failed', {
+        errors: Object.keys(errors),
+        formData: {
+          name: formData.name,
+          email: formData.email,
+          projectType: formData.projectType
+        },
+      });
     }
   };
 
+  // Handle manual retry
+  const handleRetry = async () => {
+    logger.logUserAction('Contact Form Manual Retry', {
+      retryCount,
+      formData: {
+        name: formData.name,
+        email: formData.email,
+        projectType: formData.projectType
+      },
+    });
+
+    await retrySubmission();
+  };
+
   return (
-    <section id="contact" className="py-20 md:py-28 bg-gradient-to-b from-primary-900 to-primary-950 text-white" role="region" aria-label="Contact section">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className={`text-center mb-16 md:mb-20 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-          <h3 className="text-secondary-400 font-medium tracking-wide mb-3">Get In Touch</h3>
-          <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6">Let's Discuss Your Project</h2>
-          <div className="w-24 h-1 bg-secondary-500 mx-auto"></div>
-          <p className="mt-6 text-slate-200 max-w-2xl mx-auto text-lg">
+    <section
+      id="contact"
+      ref={elementRef}
+      className="py-24 md:py-32 bg-gradient-to-br from-primary-900 via-primary-800 to-primary-950 text-white relative overflow-hidden"
+      role="region"
+      aria-label="Contact section"
+    >
+      {/* Background decorative elements for visual appeal */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-secondary-500/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-accent-500/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+      <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-primary-400/5 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2"></div>
+
+      <div className="container mx-auto px-6 md:px-8 max-w-7xl relative z-10">
+        {/* Section header with animation */}
+        <div className={`text-center mb-20 md:mb-24 transition-all duration-700 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}>
+          <h3 className="text-secondary-400 font-semibold tracking-widest uppercase text-sm mb-4">
+            Get In Touch
+          </h3>
+          <h2 className="font-display text-4xl md:text-6xl font-bold mb-6 tracking-tight">
+            Let's Discuss Your Project
+          </h2>
+          <div className="w-32 h-1.5 bg-gradient-to-r from-secondary-500 to-secondary-300 mx-auto rounded-full"></div>
+          <p className="mt-8 text-slate-200 max-w-3xl mx-auto text-xl leading-relaxed font-light">
             Ready to elevate your online presence with a professionally designed, high-performance website?
             Contact us to discuss your frontend design and SEO requirements.
           </p>
         </div>
 
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className={`lg:col-span-1 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-12">
+            {/* Contact Information Panel */}
+            <div className={`lg:col-span-1 transition-all duration-700 delay-100 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}>
               <div className="bg-gradient-to-br from-primary-800/80 to-primary-900/90 backdrop-blur-sm rounded-xl p-8 md:p-10 h-full shadow-elevated border border-primary-700/30 relative overflow-hidden">
-                {/* Decorative elements */}
+                {/* Decorative background elements */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-secondary-500/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
                 <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary-600/20 rounded-full blur-3xl -ml-20 -mb-20"></div>
 
@@ -159,16 +253,23 @@ const Contact: React.FC = () => {
                 </h3>
 
                 <div className="space-y-12 relative z-10">
+                  {/* Email contact */}
                   <div className="flex items-start transform transition-transform duration-300 hover:translate-x-2">
                     <div className="mr-5 bg-secondary-500 rounded-full p-4 text-primary-900 shadow-lg">
                       <FaEnvelope size={22} />
                     </div>
                     <div>
                       <h4 className="text-sm font-medium text-secondary-300 mb-2">Email</h4>
-                      <a href="mailto:contact@topea.me" className="text-white hover:text-secondary-400 transition-colors text-lg">contact@topea.me</a>
+                      <a
+                        href="mailto:contact@topea.me"
+                        className="text-white hover:text-secondary-400 transition-colors text-lg"
+                      >
+                        contact@topea.me
+                      </a>
                     </div>
                   </div>
 
+                  {/* Location information */}
                   <div className="flex items-start transform transition-transform duration-300 hover:translate-x-2">
                     <div className="mr-5 bg-secondary-500 rounded-full p-4 text-primary-900 shadow-lg">
                       <FaMapMarkerAlt size={22} />
@@ -179,38 +280,108 @@ const Contact: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* Business hours and response time */}
                   <div className="mt-12 pt-8 border-t border-primary-700/30">
                     <p className="text-slate-300 text-sm">
-                      We're available Monday through Friday, 9:00 AM to 6:00 PM GMT. We typically respond to all inquiries within 24 hours.
+                      We're available Monday through Friday, 9:00 AM to 6:00 PM GMT.
+                      We typically respond to all inquiries within 24 hours.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className={`lg:col-span-2 transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            {/* Contact Form Panel */}
+            <div className={`lg:col-span-2 transition-all duration-700 delay-200 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+            }`}>
               <div className="bg-white text-slate-800 rounded-xl p-8 md:p-10 shadow-elevated">
-                <h3 className="font-serif text-2xl font-bold mb-6 text-primary-800">Send a Message</h3>
+                <h3 className="font-serif text-2xl font-bold mb-6 text-primary-800">
+                  Send a Message
+                </h3>
 
-                {isSubmitted ? (
-                  <div className="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-lg relative mb-6 shadow-soft" role="alert">
-                    <strong className="font-bold">Thank you for contacting us!</strong>
-                    <span className="block sm:inline"> Your message has been received. Our design team will review your requirements and respond promptly.</span>
+                {/* Success message display */}
+                {isSubmitted && (
+                  <div
+                    className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 text-green-800 px-8 py-6 rounded-xl relative mb-8 shadow-lg backdrop-blur-sm"
+                    role="alert"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <strong className="font-bold text-lg">Thank you for contacting us!</strong>
+                        <p className="mt-1">
+                          Your message has been received. Our design team will review your requirements and respond promptly.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                ) : null}
+                )}
 
-                {submitError ? (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-lg relative mb-6 shadow-soft" role="alert">
-                    <strong className="font-bold">Error:</strong>
-                    <span className="block sm:inline"> {submitError}</span>
+                {/* Error message display with retry functionality */}
+                {submitError && (
+                  <div
+                    className="bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-200 text-red-800 px-8 py-6 rounded-xl relative mb-8 shadow-lg backdrop-blur-sm"
+                    role="alert"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <FaExclamationTriangle className="w-3 h-3 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <strong className="font-bold text-lg">
+                          {isRetrying ? 'Retrying...' : 'Submission Failed'}
+                        </strong>
+                        <p className="mt-1">{submitError}</p>
+                        {retryCount > 0 && (
+                          <p className="mt-2 text-sm text-red-600">
+                            Retry attempt {retryCount} failed.
+                          </p>
+                        )}
+                        {!isRetrying && (
+                          <div className="mt-4 flex flex-col sm:flex-row gap-3">
+                            <button
+                              onClick={handleRetry}
+                              disabled={isSubmitting}
+                              className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 text-sm font-medium"
+                            >
+                              <FaRedo className="w-3 h-3" />
+                              Try Again
+                            </button>
+                            <button
+                              onClick={resetSubmission}
+                              className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors duration-200 text-sm font-medium"
+                            >
+                              Dismiss
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    {isRetrying && (
+                      <div className="mt-4">
+                        <div className="flex items-center gap-2 text-sm text-red-600">
+                          <div className="animate-spin w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full"></div>
+                          <span>Attempting to resend your message...</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                ) : null}
+                )}
 
+                {/* Contact Form */}
                 <form onSubmit={handleSubmit} aria-describedby="form-instructions">
                   <p id="form-instructions" className="sr-only">
                     All fields marked with an asterisk are required.
                   </p>
+
+                  {/* Name and Email Fields Row */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    {/* Name Field */}
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
                         Full Name *
@@ -221,8 +392,10 @@ const Contact: React.FC = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors ${
-                          errors.name ? 'border-red-400 bg-red-50' : 'border-slate-200 focus:bg-white bg-slate-50'
+                        className={`w-full px-5 py-4 border-2 rounded-xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all duration-300 backdrop-blur-sm ${
+                          errors.name
+                            ? 'border-red-400 bg-red-50/80'
+                            : 'border-slate-200/60 focus:bg-white/90 bg-white/60 hover:bg-white/80'
                         }`}
                         placeholder="Your name"
                         aria-required="true"
@@ -236,6 +409,7 @@ const Contact: React.FC = () => {
                       )}
                     </div>
 
+                    {/* Email Field */}
                     <div>
                       <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
                         Email Address *
@@ -246,8 +420,10 @@ const Contact: React.FC = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors ${
-                          errors.email ? 'border-red-400 bg-red-50' : 'border-slate-200 focus:bg-white bg-slate-50'
+                        className={`w-full px-5 py-4 border-2 rounded-xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all duration-300 backdrop-blur-sm ${
+                          errors.email
+                            ? 'border-red-400 bg-red-50/80'
+                            : 'border-slate-200/60 focus:bg-white/90 bg-white/60 hover:bg-white/80'
                         }`}
                         placeholder="your.email@example.com"
                         aria-required="true"
@@ -262,7 +438,9 @@ const Contact: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* Project Type and Budget Fields Row */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    {/* Project Type Dropdown */}
                     <div>
                       <label htmlFor="projectType" className="block text-sm font-medium text-slate-700 mb-2">
                         Project Type
@@ -272,7 +450,7 @@ const Contact: React.FC = () => {
                         name="projectType"
                         value={formData.projectType}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors bg-slate-50 focus:bg-white"
+                        className="w-full px-5 py-4 border-2 border-slate-200/60 rounded-xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all duration-300 bg-white/60 focus:bg-white/90 hover:bg-white/80 backdrop-blur-sm"
                         aria-describedby="projectType-help"
                       >
                         <option value="">Select project type</option>
@@ -288,9 +466,10 @@ const Contact: React.FC = () => {
                       </p>
                     </div>
 
+                    {/* Budget Selection Card */}
                     <div>
                       <div
-                        className="relative overflow-hidden rounded-lg bg-gradient-to-r from-primary-600 to-primary-800 p-6 text-white shadow-elevated group"
+                        className="relative overflow-hidden rounded-lg bg-gradient-to-r from-primary-600 to-primary-800 p-6 text-white shadow-elevated group cursor-pointer"
                         onClick={() => setFormData((prev) => ({ ...prev, budget: 'flexible' }))}
                         role="button"
                         tabIndex={0}
@@ -302,9 +481,11 @@ const Contact: React.FC = () => {
                         aria-pressed={formData.budget === 'flexible'}
                         aria-label="Select flexible budget option"
                       >
+                        {/* Hover overlay effects */}
                         <div className="absolute inset-0 bg-gradient-to-r from-secondary-400 to-secondary-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <div className="absolute -inset-1 bg-gradient-to-r from-secondary-400 to-primary-600 opacity-30 blur-xl group-hover:opacity-70 transition-opacity duration-500 group-hover:duration-200 animate-pulse-slow"></div>
 
+                        {/* Content */}
                         <div className="relative flex flex-col items-center text-center z-20 transition-colors duration-300 group-hover:text-primary-900">
                           <h4 className="font-serif text-lg font-bold mb-2">Flexible Budget Options</h4>
                           <p className="text-sm opacity-90 group-hover:opacity-100">
@@ -313,12 +494,14 @@ const Contact: React.FC = () => {
                           <input type="hidden" name="budget" value="flexible" />
                         </div>
 
+                        {/* Decorative elements */}
                         <div className="absolute top-0 right-0 -mt-3 -mr-3 h-16 w-16 bg-secondary-500 rounded-full opacity-50 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 z-10"></div>
                         <div className="absolute bottom-0 left-0 -mb-4 -ml-4 h-12 w-12 bg-primary-900 rounded-full opacity-50 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110 z-10"></div>
                       </div>
                     </div>
                   </div>
 
+                  {/* Message Field */}
                   <div className="mb-6">
                     <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">
                       Message *
@@ -328,9 +511,11 @@ const Contact: React.FC = () => {
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
-                      rows={5}
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors ${
-                        errors.message ? 'border-red-400 bg-red-50' : 'border-slate-200 focus:bg-white bg-slate-50'
+                      rows={6}
+                      className={`w-full px-5 py-4 border-2 rounded-xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 outline-none transition-all duration-300 backdrop-blur-sm resize-none ${
+                        errors.message
+                          ? 'border-red-400 bg-red-50/80'
+                          : 'border-slate-200/60 focus:bg-white/90 bg-white/60 hover:bg-white/80'
                       }`}
                       placeholder="Tell us about your website design needs, SEO requirements, and project goals..."
                       aria-required="true"
@@ -344,7 +529,7 @@ const Contact: React.FC = () => {
                     )}
                   </div>
 
-                  {/* Honeypot field - hidden from users but bots will fill it out */}
+                  {/* Honeypot field - hidden spam protection */}
                   <div className="hidden" aria-hidden="true">
                     <label htmlFor="honeypot" className="hidden">
                       Leave this field empty
@@ -360,30 +545,59 @@ const Contact: React.FC = () => {
                     />
                   </div>
 
-                  {/* Centered button container */}
+                  {/* Submit Button */}
                   <div className="flex justify-center">
                     <button
                       type="submit"
-                      disabled={isSubmitting}
-                      className={`flex items-center justify-center px-8 py-4 bg-secondary-500 hover:bg-secondary-600 text-primary-900 font-medium rounded-lg transition-all transform hover:scale-105 hover:shadow-elevated focus:outline-none focus:ring-2 focus:ring-secondary-400 focus:ring-opacity-50 disabled:opacity-75 disabled:cursor-not-allowed ${
-                        isSubmitting ? 'opacity-75 cursor-not-allowed' : ''
+                      disabled={isSubmitting || isRetrying}
+                      className={`group flex items-center justify-center px-10 py-5 bg-gradient-to-r from-secondary-500 to-secondary-400 hover:from-secondary-600 hover:to-secondary-500 text-primary-900 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-secondary-500/25 focus:outline-none focus:ring-4 focus:ring-secondary-500/50 focus:scale-105 disabled:opacity-75 disabled:cursor-not-allowed disabled:transform-none relative overflow-hidden ${
+                        (isSubmitting || isRetrying) ? 'opacity-75 cursor-not-allowed' : ''
                       }`}
                     >
-                      {isSubmitting ? (
+                      {isSubmitting || isRetrying ? (
                         <>
-                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          <svg
+                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary-900"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
                           </svg>
-                          Sending...
+                          {isRetrying ? (
+                            <>Retrying... (Attempt {retryCount + 1})</>
+                          ) : (
+                            <>Sending...</>
+                          )}
                         </>
                       ) : (
                         <>
-                          Send Message <FaPaperPlane size={18} className="ml-2" />
+                          <span className="relative z-10 flex items-center gap-3">
+                            Send Message
+                            <FaPaperPlane
+                              size={18}
+                              className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+                            />
+                          </span>
+                          <div className="absolute inset-0 bg-gradient-to-r from-secondary-400 to-secondary-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </>
                       )}
                     </button>
                   </div>
+
+                  {/* Response time notice */}
                   <p className="mt-4 text-sm text-slate-500 text-center">
                     Your inquiry is important to us. We respond to all messages within 24 business hours.
                   </p>
