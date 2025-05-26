@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server:dev": "cd server && npm run dev",
+    "server:dev": "cd server && npm run build && npm run start",
     "server:build": "cd server && npm run build",
     "server:start": "cd server && npm run start",
     "start": "npm run server:start",
@@ -22,12 +22,13 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0",
+    "express": "^4.19.2",
     "lucide-react": "^0.503.0",
     "nodemailer": "^6.10.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "sanitize-html": "^2.17.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
@@ -36,6 +37,7 @@
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.3.22",
     "@types/react-dom": "^18.3.7",
+    "@types/sanitize-html": "^2.16.0",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.18",
     "eslint": "^9.9.1",

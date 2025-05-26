@@ -1,4 +1,11 @@
 const nodemailer = require('nodemailer');
+const sanitizeHtml = require('sanitize-html');
+
+// Sanitize options
+const sanitizeOptions = {
+  allowedTags: ['p', 'br', 'strong', 'em', 'b', 'i', 'u'],
+  allowedAttributes: {},
+};
 
 // Utility functions for contact form handling
 /**
@@ -21,27 +28,34 @@ const validateEmail = (email) => {
  * @returns {object} - The mail options
  */
 const createMailOptions = (name, email, projectType, budget, message) => {
+  const sanName = sanitizeHtml(name, { allowedTags: [], allowedAttributes: {} });
+  const sanEmail = sanitizeHtml(email, { allowedTags: [], allowedAttributes: {} });
+  const sanProjectType = projectType ? sanitizeHtml(projectType, { allowedTags: [], allowedAttributes: {} }) : 'Not specified';
+  const sanBudget = budget ? sanitizeHtml(budget, { allowedTags: [], allowedAttributes: {} }) : 'Not specified';
+  const sanMessageText = sanitizeHtml(message, { allowedTags: [], allowedAttributes: {} });
+  const sanMessageHtml = sanitizeHtml(message.replace(/\n/g, '<br>'), sanitizeOptions);
+
   return {
     from: 'contact@topea.me',
     to: 'contact@topea.me',
-    replyTo: email,
-    subject: `New Contact Form Submission from ${name}`,
+    replyTo: sanEmail, // Use sanitized email for replyTo as well
+    subject: `New Contact Form Submission from ${sanName}`,
     text: `
-Name: ${name}
-Email: ${email}
-Project Type: ${projectType || 'Not specified'}
-Budget: ${budget || 'Not specified'}
+Name: ${sanName}
+Email: ${sanEmail}
+Project Type: ${sanProjectType}
+Budget: ${sanBudget}
 Message:
-${message}
+${sanMessageText}
     `,
     html: `
 <h2>New Contact Form Submission</h2>
-<p><strong>Name:</strong> ${name}</p>
-<p><strong>Email:</strong> ${email}</p>
-<p><strong>Project Type:</strong> ${projectType || 'Not specified'}</p>
-<p><strong>Budget:</strong> ${budget || 'Not specified'}</p>
+<p><strong>Name:</strong> ${sanName}</p>
+<p><strong>Email:</strong> ${sanEmail}</p>
+<p><strong>Project Type:</strong> ${sanProjectType}</p>
+<p><strong>Budget:</strong> ${sanBudget}</p>
 <p><strong>Message:</strong></p>
-<p>${message.replace(/\n/g, '<br>')}</p>
+<p>${sanMessageHtml}</p>
     `
   };
 };
@@ -56,32 +70,40 @@ ${message}
  * @returns {object} - The mail options
  */
 const createAutoReplyOptions = (name, email, projectType, budget, message) => {
+  const sanName = sanitizeHtml(name, { allowedTags: [], allowedAttributes: {} });
+  // Email for 'to' field should remain as is for delivery, but other instances are sanitized
+  const sanEmail = sanitizeHtml(email, { allowedTags: [], allowedAttributes: {} });
+  const sanProjectType = projectType ? sanitizeHtml(projectType, { allowedTags: [], allowedAttributes: {} }) : 'Not specified';
+  const sanBudget = budget ? sanitizeHtml(budget, { allowedTags: [], allowedAttributes: {} }) : 'Not specified';
+  const sanMessageText = sanitizeHtml(message, { allowedTags: [], allowedAttributes: {} });
+  const sanMessageHtml = sanitizeHtml(message.replace(/\n/g, '<br>'), sanitizeOptions);
+
   return {
     from: 'contact@topea.me',
-    to: email,
-    subject: 'Thank you for contacting Topea',
+    to: email, // Original email for 'to' field
+    subject: `Thank you for contacting Topea`, // Subject doesn't need user input directly here
     text: `
-Dear ${name},
+Dear ${sanName},
 
 Thank you for reaching out to us. We have received your message and will get back to you within 24 business hours.
 
 Here's a summary of your inquiry:
-- Project Type: ${projectType || 'Not specified'}
-- Budget: ${budget || 'Not specified'}
-- Message: ${message}
+- Project Type: ${sanProjectType}
+- Budget: ${sanBudget}
+- Message: ${sanMessageText}
 
 Best regards,
 The Topea Team
     `,
     html: `
 <h2>Thank you for contacting Topea</h2>
-<p>Dear ${name},</p>
+<p>Dear ${sanName},</p>
 <p>Thank you for reaching out to us. We have received your message and will get back to you within 24 business hours.</p>
 <p>Here's a summary of your inquiry:</p>
 <ul>
-  <li><strong>Project Type:</strong> ${projectType || 'Not specified'}</li>
-  <li><strong>Budget:</strong> ${budget || 'Not specified'}</li>
-  <li><strong>Message:</strong> ${message.replace(/\n/g, '<br>')}</li>
+  <li><strong>Project Type:</strong> ${sanProjectType}</li>
+  <li><strong>Budget:</strong> ${sanBudget}</li>
+  <li><strong>Message:</strong> ${sanMessageHtml}</li>
 </ul>
 <p>Best regards,<br>The Topea Team</p>
     `
@@ -107,8 +129,9 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD
   },
   tls: {
-    // Do not fail on invalid certs
-    rejectUnauthorized: false
+    // For production, ensure valid certificates. In development, you might allow self-signed certs.
+    // For production, this should be true.
+    rejectUnauthorized: process.env.NODE_ENV === 'development' ? false : true
   }
 });
 
