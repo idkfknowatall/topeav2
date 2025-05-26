@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "redirects": [
-    { "source": "/(.*)", "destination": "https://topea.me/$1", "statusCode": 301, "has": [{ "type": "host", "value": "www.topea.me" }] }
-  ],
   "rewrites": [
     { "source": "/api/contact", "destination": "/api/contact/index.js" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
@@ -14,7 +11,7 @@
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "https://topea.me, https://www.topea.me"
+          "value": "*"
         },
         {
           "key": "Access-Control-Allow-Methods",
@@ -93,7 +90,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' https://fonts.googleapis.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://topea.me https://www.topea.me; frame-src 'none'; object-src 'none'; upgrade-insecure-requests;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https:; frame-src 'none'; object-src 'none';"
         },
         {
           "key": "X-Content-Type-Options",
