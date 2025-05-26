@@ -10,6 +10,12 @@ import helmet from 'helmet';
 // Load environment variables
 dotenv.config();
 
+// Validate critical environment variables
+if (!process.env.EMAIL_PASSWORD) {
+  console.error('Error: EMAIL_PASSWORD environment variable is not set. Please configure it in your .env file.');
+  process.exit(1); // Exit the process if a critical variable is missing
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -22,8 +28,8 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      scriptSrc: ["'self'", "https://fonts.googleapis.com"], // Removed 'unsafe-inline'
+      styleSrc: ["'self'", "https://fonts.googleapis.com"],  // Removed 'unsafe-inline'
       imgSrc: ["'self'", "data:", "https:"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       connectSrc: ["'self'", "https://topea.me", "https://www.topea.me"],
@@ -39,7 +45,7 @@ app.use(helmet({
 
 // HTTPS redirection in production
 if (process.env.NODE_ENV === 'production') {
-  app.use((req, res, next) => {
+  app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (req.header('x-forwarded-proto') !== 'https') {
       res.redirect(`https://${req.header('host')}${req.url}`);
     } else {
@@ -60,8 +66,8 @@ app.use(cors({
 }));
 
 // Rate limiting
-const requestCounts = new Map();
-const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hour in milliseconds
+const requestCounts = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour in milliseconds
 const MAX_REQUESTS_PER_IP = 5;
 
 const rateLimiter = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
@@ -70,7 +76,7 @@ const rateLimiter = (req: express.Request, res: express.Response, next: express.
   if (!requestCounts.has(ip)) {
     requestCounts.set(ip, {
       count: 1,
-      resetTime: Date.now() + RATE_LIMIT_WINDOW
+      resetTime: Date.now() + RATE_LIMIT_WINDOW_MS
     });
     next();
     return;
@@ -78,24 +84,26 @@ const rateLimiter = (req: express.Request, res: express.Response, next: express.
 
   const record = requestCounts.get(ip);
 
-  // Reset count if the window has passed
-  if (Date.now() > record.resetTime) {
-    record.count = 1;
-    record.resetTime = Date.now() + RATE_LIMIT_WINDOW;
-    next();
-    return;
-  }
+  if (record) { // Ensure record exists before accessing its properties
+    // Reset count if the window has passed
+    if (Date.now() > record.resetTime) {
+      record.count = 1;
+      record.resetTime = Date.now() + RATE_LIMIT_WINDOW_MS;
+      next();
+      return;
+    }
 
-  // Check if rate limit exceeded
-  if (record.count >= MAX_REQUESTS_PER_IP) {
-    res.status(429).json({
-      error: 'Too many requests, please try again later.'
-    });
-    return;
-  }
+    // Check if rate limit exceeded
+    if (record.count >= MAX_REQUESTS_PER_IP) {
+      res.status(429).json({
+        error: 'Too many requests, please try again later.'
+      });
+      return;
+    }
 
-  // Increment count and proceed
-  record.count++;
+    // Increment count and proceed
+    record.count++;
+  }
   next();
 };
 
@@ -109,15 +117,25 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD
   },
   tls: {
-    // Do not fail on invalid certs
-    rejectUnauthorized: false
+    // In production, ensure valid certificates. In development, you might allow self-signed certs.
+    // For production, remove or set to true.
+    rejectUnauthorized: process.env.NODE_ENV === 'development' ? false : true
   }
 });
 
 // Contact form endpoint
-app.post('/api/contact', rateLimiter, async (req, res): Promise<void> => {
+interface ContactFormRequest {
+  name: string;
+  email: string;
+  projectType?: string;
+  budget?: string;
+  message: string;
+  honeypot?: string;
+}
+
+app.post('/api/contact', rateLimiter, async (req: express.Request, res: express.Response): Promise<void> => {
   try {
-    const { name, email, projectType, budget, message, honeypot } = req.body;
+    const { name, email, projectType, budget, message, honeypot } = req.body as ContactFormRequest;
 
     // Check honeypot field (spam protection)
     if (honeypot) {
@@ -214,7 +232,7 @@ if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../dist'), {
     etag: true,
     lastModified: true,
-    setHeaders: (res, path) => {
+    setHeaders: (res: express.Response, path: string) => {
       // Set long cache for assets with hash in filename
       if (path.match(/\.(js|css|png|jpg|jpeg|gif|webp|svg|ico|woff2|woff|ttf|eot)$/)) {
         const maxAge = path.includes('.') && path.split('.').length > 2
@@ -230,12 +248,12 @@ if (process.env.NODE_ENV === 'production') {
   }));
 
   // Health check endpoint
-  app.get('/health', (_req, res) => {
+  app.get('/health', (_req: express.Request, res: express.Response) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
   // Handle all other routes
-  app.get('*', (_req, res) => {
+  app.get('*', (_req: express.Request, res: express.Response) => {
     res.sendFile(path.join(__dirname, '../dist/index.html'));
   });
 }

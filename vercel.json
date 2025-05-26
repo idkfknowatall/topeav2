@@ -14,7 +14,7 @@
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "*"
+          "value": "https://topea.me, https://www.topea.me"
         },
         {
           "key": "Access-Control-Allow-Methods",
