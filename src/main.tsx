@@ -21,7 +21,7 @@ if ('serviceWorker' in navigator) {
     window.requestIdleCallback(registerServiceWorker, { timeout: 5000 });
   } else {
     // Fallback for browsers that don't support requestIdleCallback
-    setTimeout(registerServiceWorker, 5000);
+    setTimeout(registerServiceWorker, 1000); // Shorter fallback timeout
   }
 }
 
