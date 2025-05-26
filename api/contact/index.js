@@ -121,7 +121,7 @@ const isSpam = (honeypot) => {
 
 // Create email transporter with the updated settings
 const transporter = nodemailer.createTransport({
-  host: 'de3000.dnsiaas.com', // Using the HELO domain from your settings
+  host: 'mail.topea.me', // Standardized to match server configuration
   port: 465,
   secure: true, // true for 465, false for other ports
   auth: {
@@ -151,6 +151,14 @@ const ALLOWED_ORIGINS = [
 ];
 
 module.exports = async (req, res) => {
+  // Check if EMAIL_PASSWORD is configured
+  if (!process.env.EMAIL_PASSWORD) {
+    console.error('EMAIL_PASSWORD environment variable is not set');
+    return res.status(500).json({
+      error: 'Server configuration error. Please contact the administrator.'
+    });
+  }
+
   // Get the origin of the request
   const requestOrigin = req.headers.origin;
 
@@ -242,6 +250,17 @@ module.exports = async (req, res) => {
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('Error sending email:', error);
-    return res.status(500).json({ error: 'Failed to send email. Please try again later.' });
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      command: error.command,
+      response: error.response,
+      responseCode: error.responseCode
+    });
+    return res.status(500).json({
+      error: 'Failed to send email. Please try again later.',
+      // Include error code for debugging (remove in production)
+      debug: process.env.NODE_ENV === 'development' ? error.code : undefined
+    });
   }
 };
