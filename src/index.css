@@ -344,3 +344,36 @@ html, body {
 .group:hover .portfolio-card-image {
   border-radius: 1rem 1rem 0 0;
 }
+
+/* Mobile hero section optimizations */
+@media screen and (max-width: 767px) {
+  /* Ensure hero content doesn't overlap with header */
+  #home {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  }
+
+  /* Prevent text from being too close to edges on very small screens */
+  #home .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Ensure scroll button is always visible and not behind other elements */
+  #home .z-20 {
+    z-index: 20 !important;
+  }
+
+  /* Improve button touch targets on mobile */
+  #home button {
+    min-height: 44px; /* iOS recommended touch target size */
+    min-width: 44px;
+  }
+}
+
+/* Tablet optimizations */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  #home {
+    min-height: 100vh;
+  }
+}

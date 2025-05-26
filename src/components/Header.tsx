@@ -17,27 +17,27 @@ const Header: React.FC = () => {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-soft py-3' : 'bg-transparent py-5'
+        isScrolled ? 'bg-white shadow-soft py-2 sm:py-3' : 'bg-transparent py-3 sm:py-4 md:py-5'
       }`}
       role="banner"
       aria-label="Primary"
     >
-      <div className="container mx-auto px-6 md:px-8 flex justify-between items-center">
+      <div className="container mx-auto px-4 sm:px-6 md:px-8 flex justify-between items-center">
         <div className="flex items-center">
           <div
-            className={`flex items-center justify-center w-8 h-8 rounded-md mr-2 transition-all duration-300 ${
+            className={`flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-md mr-2 transition-all duration-300 ${
               isScrolled ? 'bg-primary-600 animate-pulse-glow' : 'bg-secondary-500 animate-pulse-glow'
             }`}
             aria-hidden="true"
           >
             <FaCode
-              className={`text-lg transition-colors duration-300 ${
+              className={`text-sm sm:text-base md:text-lg transition-colors duration-300 ${
                 isScrolled ? 'text-white' : 'text-primary-900'
               }`}
             />
           </div>
           <h1
-            className={`font-display font-bold text-2xl transition-colors duration-300 tracking-tight ${
+            className={`font-display font-bold text-lg sm:text-xl md:text-2xl transition-colors duration-300 tracking-tight ${
               isScrolled ? 'text-slate-800' : 'text-white'
             }`}
           >
