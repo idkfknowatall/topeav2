@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import compression from 'compression';
 import helmet from 'helmet';
+import sanitizeHtml from 'sanitize-html';
 
 // Load environment variables
 dotenv.config();
@@ -157,28 +158,43 @@ app.post('/api/contact', rateLimiter, async (req: express.Request, res: express.
       return;
     }
 
+    // Sanitize options
+    const sanitizeOptions = {
+      allowedTags: ['p', 'br', 'strong', 'em', 'b', 'i', 'u'],
+      allowedAttributes: {},
+    };
+
+    // Sanitize inputs
+    const sanName = sanitizeHtml(name, { allowedTags: [], allowedAttributes: {} });
+    const sanEmail = sanitizeHtml(email, { allowedTags: [], allowedAttributes: {} }); // Sanitize for display, original for 'replyTo' and 'to'
+    const sanProjectType = projectType ? sanitizeHtml(projectType, { allowedTags: [], allowedAttributes: {} }) : 'Not specified';
+    const sanBudget = budget ? sanitizeHtml(budget, { allowedTags: [], allowedAttributes: {} }) : 'Not specified';
+    const sanMessageText = sanitizeHtml(message, { allowedTags: [], allowedAttributes: {} });
+    const sanMessageHtml = sanitizeHtml(message.replace(/\n/g, '<br>'), sanitizeOptions);
+
+
     // Prepare email content
     const mailOptions = {
       from: 'contact@topea.me',
       to: 'contact@topea.me',
-      replyTo: email,
-      subject: `New Contact Form Submission from ${name}`,
+      replyTo: email, // Original email for replyTo
+      subject: `New Contact Form Submission from ${sanName}`,
       text: `
-Name: ${name}
-Email: ${email}
-Project Type: ${projectType || 'Not specified'}
-Budget: ${budget || 'Not specified'}
+Name: ${sanName}
+Email: ${sanEmail}
+Project Type: ${sanProjectType}
+Budget: ${sanBudget}
 Message:
-${message}
+${sanMessageText}
       `,
       html: `
 <h2>New Contact Form Submission</h2>
-<p><strong>Name:</strong> ${name}</p>
-<p><strong>Email:</strong> ${email}</p>
-<p><strong>Project Type:</strong> ${projectType || 'Not specified'}</p>
-<p><strong>Budget:</strong> ${budget || 'Not specified'}</p>
+<p><strong>Name:</strong> ${sanName}</p>
+<p><strong>Email:</strong> ${sanEmail}</p>
+<p><strong>Project Type:</strong> ${sanProjectType}</p>
+<p><strong>Budget:</strong> ${sanBudget}</p>
 <p><strong>Message:</strong></p>
-<p>${message.replace(/\n/g, '<br>')}</p>
+<p>${sanMessageHtml}</p>
       `
     };
 
@@ -188,30 +204,30 @@ ${message}
     // Send auto-reply to the user
     const autoReplyOptions = {
       from: 'contact@topea.me',
-      to: email,
+      to: email, // Original email for 'to' field
       subject: 'Thank you for contacting Topea',
       text: `
-Dear ${name},
+Dear ${sanName},
 
 Thank you for reaching out to us. We have received your message and will get back to you within 24 business hours.
 
 Here's a summary of your inquiry:
-- Project Type: ${projectType || 'Not specified'}
-- Budget: ${budget || 'Not specified'}
-- Message: ${message}
+- Project Type: ${sanProjectType}
+- Budget: ${sanBudget}
+- Message: ${sanMessageText}
 
 Best regards,
 The Topea Team
       `,
       html: `
 <h2>Thank you for contacting Topea</h2>
-<p>Dear ${name},</p>
+<p>Dear ${sanName},</p>
 <p>Thank you for reaching out to us. We have received your message and will get back to you within 24 business hours.</p>
 <p>Here's a summary of your inquiry:</p>
 <ul>
-  <li><strong>Project Type:</strong> ${projectType || 'Not specified'}</li>
-  <li><strong>Budget:</strong> ${budget || 'Not specified'}</li>
-  <li><strong>Message:</strong> ${message.replace(/\n/g, '<br>')}</li>
+  <li><strong>Project Type:</strong> ${sanProjectType}</li>
+  <li><strong>Budget:</strong> ${sanBudget}</li>
+  <li><strong>Message:</strong> ${sanMessageHtml}</li>
 </ul>
 <p>Best regards,<br>The Topea Team</p>
       `
